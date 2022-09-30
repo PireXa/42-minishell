@@ -41,10 +41,9 @@ void ft_lstadd_back(t_fds **lst, t_fds *new)
 {
     t_fds *tmp;
 
-    if (!*lst)
-    {
+    if (*lst == NULL) {
         *lst = new;
-        return ;
+        return;
     }
     tmp = *lst;
     while (tmp->next)
@@ -65,6 +64,25 @@ void ft_lstadd_back(t_fds **lst, t_fds *new)
     return (i);
 }*/
 
+char *ft_strdup(char *str)
+{
+    int i;
+    char *new;
+
+    i = 0;
+    while (str[i])
+        i++;
+    new = malloc(sizeof(char) * (i + 1));
+    i = 0;
+    while (str[i])
+    {
+        new[i] = str[i];
+        i++;
+    }
+    new[i] = '\0';
+    return (new);
+}
+
 int ft_strlen(char *str)
 {
     int i;
@@ -75,10 +93,30 @@ int ft_strlen(char *str)
     return (i);
 }
 
+void    print_triple_pointer(char ***triple)
+{
+    int i;
+    int j;
+
+    i = 0;
+    while (triple[i])
+    {
+        j = 0;
+        printf("New Comand\n");
+        while (triple[i][j])
+        {
+            printf("%s\n", triple[i][j]);
+            j++;
+        }
+        i++;
+    }
+}
+
 int ft_str_ui_len(const char *s, int start, int letra) {
     int i;
 
     i = start;
+    printf("start: %d\n", start);
     while (s[i] && s[i] != letra) {
         //printf("string lenght s[i] = %c\n", s[i]);
         i++;
@@ -105,7 +143,8 @@ char *str_space_dup(const char *s1, int start, int letra)
     if (!s1) {
         exit(42);
     }
-    //printf("TAMANHO DESTA MERDA: %d\n", ft_str_ui_len(s1, start, letra) + 1);
+    printf("s1 = %s\n", s1);
+    printf("TAMANHO DESTA MERDA: %d\n", ft_str_ui_len(s1, start, letra) + 1);
     str = (char *)malloc(ft_str_ui_len(s1, start, letra) + 1);
     if (!str) {
         return (NULL);
@@ -117,8 +156,11 @@ char *str_space_dup(const char *s1, int start, int letra)
         j++;
         i++;
     }
-    str[i] = 0;
-    //printf("str: %s\n", str);
+    str[j] = '\0';
+    ft_strlen(str);
+    printf("i = %d\n", i);
+    printf("str: %s\n", str);
+    printf("\n\n");
     return (str);
 }
 
@@ -157,15 +199,71 @@ int arg_ctr(t_fds *fds, int nbr) {
 char **cmd_maker(t_fds *fds, int nbr)
 {
     char **cmd;
+    int argn;
+    int i;
 
-    cmd = malloc(sizeof(char *) * (arg_ctr(fds, nbr) + 1));
-    printf("arg_ctr(fds, nbr) = %d\n", arg_ctr(fds, nbr));
-    //free (cmd);
+    i = -1;
+    argn = arg_ctr(fds, nbr);
+    cmd = malloc(sizeof(char *) * (argn + 1));
+    //printf("argn = %d\n", argn);
+    while (nbr > 1 && fds->next)
+    {
+        //printf("fds->cmd: %s\n", fds->cmd);
+        if (fds->cmd[0] == '|' || fds->next == NULL)
+            nbr--;
+        fds = fds->next;
+    }
+    //printf("fds->cmd: %s\n", fds->cmd);
+    while (++i < argn && fds)
+    {
+        //printf("copiador fds->cmd: %s\n", fds->cmd);
+        cmd[i] = ft_strdup(fds->cmd);
+        fds = fds->next;
+    }
+    cmd[i] = NULL;
+    return (cmd);
 }
-int main() {
-    char *tmp = "echo \"fork abc\" 12345 | wc -l | cat srcs/main.c | grep \"echo\" | wc -l \"ewifjwei | wd nide\"";
-    //char *tmp = "echo irvire irejg \"ur4h4 ruth4\"";
-    t_fds **fds = malloc(sizeof(t_fds *));
+
+void    delete_linked_list(t_fds *list)
+{
+    t_fds *tmp;
+
+    while (list)
+    {
+        tmp = list;
+        list = list->next;
+        free(tmp->cmd);
+        free(tmp);
+    }
+}
+
+void free_triple_pointer(char ***triple)
+{
+    int i;
+    int j;
+
+    i = 0;
+    while (triple[i])
+    {
+        j = 0;
+        while (triple[i][j])
+        {
+            free(triple[i][j]);
+            j++;
+        }
+        free(triple[i]);
+        i++;
+    }
+    free(triple);
+}
+
+int main(int ac, char **av, char **envp)
+{
+    //char *tmp = "echo \"fork abc\" 12345 | wc -l | cat srcs/main.c | grep \"echo\" | wc -l \"ewifjwei | wd nide\"";
+    char *tmp = "export | wc -l | cat srcs/main.c | grep \"echo\" | wc -l \"ewifjwei | wd nide\"";
+    //char *tmp = "echo ola | ola | adeus";
+    t_fds **fds = (t_fds **)malloc(sizeof(t_fds *) * 1);
+    *fds = NULL;
     int i = -1;
     int size = ft_strlen(tmp);
     int start = 0;
@@ -210,5 +308,10 @@ int main() {
         //printf("cmd[%d] = %s\n", i, cmd[i][0]);
         printf("\n\n");
     }
+    cmd[i] = NULL;
+    print_triple_pointer(cmd);
+    delete_linked_list(*fds);
+    free(fds);
+    free_triple_pointer(cmd);
     return 0;
 }
