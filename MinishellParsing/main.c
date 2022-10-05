@@ -116,7 +116,7 @@ int ft_str_ui_len(const char *s, int start, int letra) {
     int i;
 
     i = start;
-    printf("start: %d\n", start);
+    //printf("start: %d\n", start);
     while (s[i] && s[i] != letra) {
         //printf("string lenght s[i] = %c\n", s[i]);
         i++;
@@ -143,8 +143,8 @@ char *str_space_dup(const char *s1, int start, int letra)
     if (!s1) {
         exit(42);
     }
-    printf("s1 = %s\n", s1);
-    printf("TAMANHO DESTA MERDA: %d\n", ft_str_ui_len(s1, start, letra) + 1);
+    //printf("s1 = %s\n", s1);
+    //printf("TAMANHO DESTA MERDA: %d\n", ft_str_ui_len(s1, start, letra) + 1);
     str = (char *)malloc(ft_str_ui_len(s1, start, letra) + 1);
     if (!str) {
         return (NULL);
@@ -157,11 +157,64 @@ char *str_space_dup(const char *s1, int start, int letra)
         i++;
     }
     str[j] = '\0';
-    ft_strlen(str);
-    printf("i = %d\n", i);
+    /*printf("i = %d\n", i);
     printf("str: %s\n", str);
-    printf("\n\n");
+    printf("\n\n");*/
     return (str);
+}
+
+int dollar(char *str)
+{
+    int i;
+
+    i = -1;
+    while (str[++i])
+        if (str[i] == '$')
+            return (1);
+    return (0);
+}
+
+char *env_str(char *str, int start, int letra)
+{
+    int i;
+    int ctr;
+    char *var_name;
+
+    i = start - 1;
+    ctr = 0;
+    while (str[++i] != letra && str[i] != ' ')
+        ctr++;
+    var_name = malloc(ctr + 1);
+    i = start - 1;
+    ctr = -1;
+    while (str[++i] != letra && str[i] != ' ')
+        var_name[++ctr] = str[i];
+    return (var_name);
+}
+int char_count(t_fds **vars, char *str, int start, int letra)
+{
+    int i;
+    int ctr;
+    //char *var_name;
+
+    i = start - 1;
+    ctr = 0;
+    while (str[++i] != letra){
+        if (str[i] == '$')
+        {
+            ft_lstadd_back(vars, ft_lstnew(env_str(str, i + 1, letra)));
+        }
+    }
+    return (ctr);
+}
+
+char *dollar_str(t_fds **vars, char *str, int start, int letra)
+{
+    int i;
+    char *value;
+
+    i = start - 1;
+    char_count(vars, str, start, letra);
 }
 
 int pipe_counter(t_fds *fds) {
@@ -260,10 +313,14 @@ void free_triple_pointer(char ***triple)
 int main(int ac, char **av, char **envp)
 {
     //char *tmp = "echo \"fork abc\" 12345 | wc -l | cat srcs/main.c | grep \"echo\" | wc -l \"ewifjwei | wd nide\"";
-    char *tmp = "export | wc -l | cat srcs/main.c | grep \"echo\" | wc -l \"ewifjwei | wd nide\"";
+    //char *tmp = "export | wc -l | cat srcs/main.c | grep \"echo\" | wc -l \"ewifjwei | wd nide\"";
     //char *tmp = "echo ola | ola | adeus";
+    char *tmp = "echo \"na fds adoro $coiso e $cenas\"";
     t_fds **fds = (t_fds **)malloc(sizeof(t_fds *) * 1);
+    t_fds **vars = (t_fds **)malloc(sizeof(t_fds *) * 1);
+
     *fds = NULL;
+    *vars = NULL;
     int i = -1;
     int size = ft_strlen(tmp);
     int start = 0;
@@ -281,9 +338,13 @@ int main(int ac, char **av, char **envp)
             i++;
             start++;
             //printf("start \": %c\n", tmp[start]);
-            ft_lstadd_back(fds, ft_lstnew(str_space_dup(tmp, start, '"')));
             while (tmp[++i] != '"')
                 ;
+            dollar_str(vars, tmp, start, '"');
+            /*if (dollar)
+             * ft_lstadd_back(fds, ft_lstnew(dollar_str(tmp, start, '"')));
+            else*/
+                ft_lstadd_back(fds, ft_lstnew(str_space_dup(tmp, start, '"')));
             i += 2;
             start = i;
             //printf("found 2 quote i = %c\n", tmp[i]);
@@ -297,18 +358,19 @@ int main(int ac, char **av, char **envp)
     }
     if (tmp[i - 3] != '\"')
         ft_lstadd_back(fds, ft_lstnew(str_space_dup(tmp, start, ' ')));
-    print_stacks(*fds);
     //printf("fds : %s\n", (*fds)->cmd);
     int cmd_ctr = pipe_counter(*fds) + 1;
-    printf("cmd_ctr: %d\n", cmd_ctr);
+    //printf("cmd_ctr: %d\n", cmd_ctr);
     char ***cmd = malloc(sizeof(char **) * (cmd_ctr + 1));
     i = -1;
     while (++i < cmd_ctr) {
         cmd[i] = cmd_maker(*fds, i + 1);
         //printf("cmd[%d] = %s\n", i, cmd[i][0]);
-        printf("\n\n");
+        //printf("\n\n");
     }
     cmd[i] = NULL;
+    print_stacks(*vars);
+    print_stacks(*fds);
     print_triple_pointer(cmd);
     delete_linked_list(*fds);
     free(fds);
