@@ -12,37 +12,12 @@
 
 #include"../../inc/minishell.h"
 
-char	*ft_strnstr(const char	*big, const char *little, size_t len)
-{
-    size_t	i;
-    size_t	j;
-
-    i = 0;
-    if (little[i] == '\0')
-        return ((char *)big);
-    while (big[i] && i < len)
-    {
-        j = 0;
-        while (big[i + j] == little[j] && i + j < len)
-        {
-            if (little[j + 1] == '\0')
-                return ((char *)big + i);
-            j++;
-        }
-        i++;
-    }
-    return (0);
-}
-
-void	execute(char *av, char **envp)
+void execute(char **cmd, t_minithings *minithings, char **envp)
 {
 	int		i;
-	char	**cmd;
 	char	*path;
 
     i = -1;
-    cmd = ft_split(av, ' ');
-    //cmd = quote_splitter(av);
     path = find_path(cmd[0], envp);
     if (!path)
 	{
@@ -52,12 +27,17 @@ void	execute(char *av, char **envp)
         free(cmd);
         exit(EXIT_FAILURE);
     }
-    if (execve(path, cmd, envp) == -1) {
-       exit(EXIT_FAILURE);
+    if (is_builtin(cmd[0]))
+    {
+        builtins(minithings, 0);
+    }
+    else
+    {
+        execve(path, cmd, envp);
     }
 }
 
-void	child_one(char *av, char **envp)
+void child_one(char **cmds, t_minithings *minithings, char **envp)
 {
 	pid_t	pid;
 	int		fd[2];
@@ -69,7 +49,7 @@ void	child_one(char *av, char **envp)
 	{
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
-		execute(av, envp);
+		execute(cmds, minithings, envp);
 	}
 	else
 	{

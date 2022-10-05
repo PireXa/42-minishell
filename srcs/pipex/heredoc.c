@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"../../inc/pipex.h"
+#include"../../inc/minishell.h"
 
 int	line_from_terminal(char **line)
 {

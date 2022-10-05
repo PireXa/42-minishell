@@ -72,13 +72,39 @@ void    value_modifier(t_exporttable **export, char *value, int i)
     indxexport(*export, i)->value = value;
 }
 
-void show_export_list(t_minithings *minithings)
+t_exporttable *copy_list(t_exporttable *list)
+{
+    t_exporttable *new;
+    t_exporttable *tmp;
+
+    new = NULL;
+    while (list)
+    {
+        tmp = add_export_node(list->key, list->value);
+        add_export_node_back(&new, tmp);
+        list = list->next;
+    }
+    return (new);
+}
+
+void show_export_list(t_minithings *minithings, int flag)
 {
     t_exporttable *tmp;
 
-    tmp = *minithings->export;
-    while (tmp) {
-        printf("declare -x %s=\"%s\"\n", tmp->key, tmp->value);
-        tmp = tmp->next;
+    tmp = copy_list(*minithings->export);
+    if (flag == 0)
+    {
+        ft_sort_list(tmp, ft_lstsize(tmp));
+        while (tmp) {
+            printf("declare -x %s=\"%s\"\n", tmp->key, tmp->value);
+            tmp = tmp->next;
+        }
     }
+    else
+        while (tmp)
+        {
+            if (ft_strlen(tmp->value) > 0)
+                printf("%s=%s\n", tmp->key, tmp->value);
+            tmp = tmp->next;
+        }
 }

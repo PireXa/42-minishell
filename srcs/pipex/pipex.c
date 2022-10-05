@@ -10,7 +10,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/pipex.h"
+#include "../../inc/minishell.h"
+
+char	*ft_strnstr(const char	*big, const char *little, size_t len)
+{
+    size_t	i;
+    size_t	j;
+
+    i = 0;
+    if (little[i] == '\0')
+        return ((char *)big);
+    while (big[i] && i < len)
+    {
+        j = 0;
+        while (big[i + j] == little[j] && i + j < len)
+        {
+            if (little[j + 1] == '\0')
+                return ((char *)big + i);
+            j++;
+        }
+        i++;
+    }
+    return (0);
+}
+
 
 char	*find_path(char *cmd, char **envp)
 {
@@ -44,31 +67,22 @@ char	*find_path(char *cmd, char **envp)
 	return (0);
 }
 
-void    pipex(int ac, char **av, char **envp)
+void pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings)
 {
-	int		*i_fd1_fd2;
+	int		i;
+    int pid;
 
-	i_fd1_fd2 = (int [3]){0, 0, 0};
-	if (ac >= 1)
-	{
-		if (ft_strncmp(av[1], "here_doc", 8) == 0)
-		{
-			i_fd1_fd2[0] = 3;
-			i_fd1_fd2[2] = open_file(av[ac - 1], 0);
-			ft_here_doc(av[2], ac);
-		}
-		else
-		{
-			i_fd1_fd2[0] = 0;
-		}
-		while (i_fd1_fd2[0] < ac - 1)
-			child_one(av[i_fd1_fd2[0]++], envp);
-        int pid = fork();
-        if (pid == 0)
+	if (nbr_cmds >= 1) {
+        i = 0;
+
+        while (i < nbr_cmds - 1)
         {
-            execute(av[ac - 1], envp);
+            child_one(cmds[i++], minithings, envp);
         }
-        waitpid(pid, 0 ,0);
-        return;
+        pid = fork();
+        if (pid == 0)
+            execute(cmds[nbr_cmds - 1], minithings, envp);
+        else
+            waitpid(pid, NULL, 0);
 	}
 }

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/pipex.h"
+#include "../../inc/minishell.h"
 
 char	*ft_str_cmdpath(const char *s1)
 {

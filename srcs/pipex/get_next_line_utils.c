@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../inc/pipex.h"
+#include "../../inc/minishell.h"
 
 size_t	ft_strlcpy(char *dst, char *src, size_t size)
 {

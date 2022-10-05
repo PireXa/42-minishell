@@ -12,22 +12,35 @@
 
 #include"../inc/minishell.h"
 
-void builtins(t_minithings *minithings, char **envp)
+int is_builtin(char *str)
+{
+    if (!str)
+        return (0);
+    if (ft_strcmp(str, "echo") == 0)
+        return (1);
+    if (ft_strncmp(str, "cd ", 3) == 0)
+        return (1);
+    if (ft_strcmp(str, "pwd") == 0)
+        return (1);
+    if (ft_strncmp(str, "export", 6) == 0)
+        return (1);
+    if (ft_strncmp(str, "unset", 5) == 0)
+        return (1);
+    if (ft_strcmp(str, "env") == 0)
+        return (1);
+    return (0);
+}
+
+void builtins(t_minithings *minithings, int flag)
 {
     int i;
 
     i = -1;
-    if (ft_strcmp(minithings->line, "exit") == 0)
-    {
-        printf("exit\n");
-        exit(1);
-    }
-    else if (ft_strncmp(minithings->line, "cd ", 3) == 0)
+    if (ft_strncmp(minithings->line, "cd ", 3) == 0 && flag == 0)
     {
         if (ft_strlen(minithings->line) == 2)
             chdir(getenv("HOME"));
         else {
-            printf("%s\n", minithings->line + 3);
             chdir(minithings->line + 3);
         }
     }
@@ -37,63 +50,40 @@ void builtins(t_minithings *minithings, char **envp)
         getcwd(cwd, sizeof(cwd));
         printf("%s\n", cwd);
     }
-
     else if (ft_strcmp(minithings->line, "env") == 0)
     {
-        t_list *tmp = *minithings->env;
-        while (tmp)
-        {
-            printf("%s\n", tmp->content);
-            tmp = tmp->next;
-        }
+        show_export_list(minithings, 1);
     }
-
-    else if (ft_strncmp(minithings->line, "echo ", 5) == 0)
+    else if (ft_strncmp(minithings->cmds[0][0], "echo", 4) == 0)
     {
-        char **echo_str;
+        printf("echo comando encontrado\n");
+        //char **echo_str;
 
-        //echo_str = ft_split(minithings->line, ' ');
-        echo_str = quote_splitter(minithings->cmds[0]);
-        if (echo_str[1][0] == '-')
+        if (minithings->cmds[0][1][0] == '-')
         {
-            if (echo_str[1][1] == 'n')
+            if (minithings->cmds[0][1][1] == 'n')
             {
                 i += 2;
-                while (echo_str[++i])
-                    printf("%s", echo_str[i]);
+                while (minithings->cmds[0][++i])
+                    printf("%s\n", minithings->cmds[0][i]);
             }
             else
-                printf("Unknown option: %c\n", echo_str[1][1]);
+                printf("Unknown option: %c\n", minithings->cmds[0][1][1]);
         }
         else
         {
             i++;
-            while (echo_str[++i])
-                printf("%s", echo_str[i]);
+            while (minithings->cmds[0][++i])
+                printf("%s\n", minithings->cmds[0][i]);
             printf("\n");
         }
     }
-
     else if (ft_strncmp(minithings->line, "export", 6) == 0)
     {
-       export(minithings);
+        export(minithings, flag);
     }
     else if (ft_strncmp(minithings->line, "unset", 5) == 0)
     {
-        unset(minithings);
-    }
-    else
-    {
-        int pid;
-
-        pid = fork();
-        if (pid == 0) {
-            while (minithings->cmds[++i])
-                ;
-            pipex( i, minithings->cmds, envp);
-            exit(0);
-        }
-        waitpid(pid, NULL, 0);
-
+       unset(minithings);
     }
 }

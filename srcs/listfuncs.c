@@ -12,26 +12,26 @@
 
 #include"../inc/minishell.h"
 
-t_list *ft_lstnew(void *content)
+t_cmds *ft_lstnew(void *content)
 {
-    t_list *new;
+    t_cmds *new;
 
     new = malloc(sizeof(t_list));
     if (!new)
         return (NULL);
-    new->content = content;
+    new->cmd = content;
     new->next = NULL;
     return (new);
 }
 
-void ft_lstadd_back(t_list **lst, t_list *new)
-{
-    t_list *tmp;
 
-    if (!*lst)
-    {
+void ft_lstadd_back(t_cmds **lst, t_cmds *new)
+{
+    t_cmds *tmp;
+
+    if (*lst == NULL) {
         *lst = new;
-        return ;
+        return;
     }
     tmp = *lst;
     while (tmp->next)
@@ -39,7 +39,7 @@ void ft_lstadd_back(t_list **lst, t_list *new)
     tmp->next = new;
 }
 
-void ft_lstadd_front(t_list **lst, t_list *new)
+void ft_lstadd_front(t_cmds **lst, t_cmds *new)
 {
     if (!*lst)
     {
