@@ -12,6 +12,17 @@
 
 #include"../inc/minishell.h"
 
+void    print_stacks(t_cmds *stck_a)
+{
+    printf("\n################\n");
+    while (stck_a)
+    {
+        printf("%s\n", stck_a->cmd);
+        stck_a = stck_a->next;
+    }
+    printf("\n################\n");
+}
+
 int ft_str_ui_len(const char *s, int start, int letra) {
     int i;
 
@@ -61,6 +72,7 @@ int pipe_counter(t_cmds *fds) {
     int i;
 
     i = 0;
+    printf("fds->cmd: %s\n", fds->cmd);
     while (fds) {
         if (fds->cmd[0] == '|')
             i++;
@@ -68,6 +80,7 @@ int pipe_counter(t_cmds *fds) {
     }
     return (i);
 }
+
 
 int arg_ctr(t_cmds *fds, int nbr) {
     int i;
@@ -111,7 +124,6 @@ char **cmd_maker(t_cmds *fds, int nbr)
     return (cmd);
 }
 
-
 void    delete_linked_list(t_cmds *list)
 {
     t_cmds *tmp;
@@ -119,6 +131,7 @@ void    delete_linked_list(t_cmds *list)
     while (list)
     {
         tmp = list;
+        printf("tmp->cmd: %s\n", tmp->cmd);
         list = list->next;
         free(tmp->cmd);
         free(tmp);
@@ -176,17 +189,6 @@ void delete_last_node(t_cmds *node)
     free(tmp->next->cmd);
     free(tmp->next);
     tmp->next = NULL;
-}
-
-void    print_stacks(t_cmds *stck_a)
-{
-    printf("\n################\n");
-    while (stck_a)
-    {
-        printf("%s\n", stck_a->cmd);
-        stck_a = stck_a->next;
-    }
-    printf("\n################\n");
 }
 
 char *ft_strndup(const char *s1, size_t n)
@@ -346,6 +348,7 @@ char *only_$(char *input, int start, t_exporttable **export)
     char *var_value;
     char *key;
 
+    printf("input[%d] = %c\n", start + 1, input[start + 1]);
     key = str_space_dup(input, start + 1, ' ');
     printf("key: %s\n", key);
     var_value = search_export(export, key);
@@ -357,6 +360,7 @@ char *only_$(char *input, int start, t_exporttable **export)
 char ***parser(char *input, t_exporttable **export)
 {
     t_cmds **cmds = (t_cmds **)malloc(sizeof(t_cmds *) * 1);
+    //*cmds = malloc(sizeof(t_cmds));
     *cmds = NULL;
     int i = -1;
     int size = ft_strlen(input);
@@ -387,7 +391,10 @@ char ***parser(char *input, t_exporttable **export)
             while (input[i] != ' ' && input[i] != '\0')
                 i++;
             ft_lstadd_back(cmds, ft_lstnew(only_$(input, start, export)));
-            start = i;
+            if (input[i] != '\0')
+                start = i + 1;
+            else
+                start = i;
         }
         else if (input[i] == '|') {
             ft_lstadd_back(cmds, ft_lstnew(pipe_str()));
@@ -401,12 +408,14 @@ char ***parser(char *input, t_exporttable **export)
         delete_last_node(*cmds);
     }
     int cmd_ctr = pipe_counter(*cmds) + 1;
-    char ***cmd = malloc(sizeof(char **) * (cmd_ctr + 1));
+    char ***cmd;
+    cmd = malloc(sizeof(char **) * (cmd_ctr + 1));
     i = -1;
     while (++i < cmd_ctr) {
         cmd[i] = cmd_maker(*cmds, i + 1);
     }
     cmd[i] = NULL;
+    print_stacks(*cmds);
     delete_linked_list(*cmds);
     free(cmds);
     return (cmd);
