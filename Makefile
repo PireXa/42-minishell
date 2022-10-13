@@ -15,11 +15,11 @@ SRCS		=		main.c sighandler.c commandsmaster.c builtins.c ft_strncmp.c \
 					pipex/children.c pipex/ft_memcmp.c pipex/get_next_line.c \
 					pipex/get_next_line_utils.c pipex/heredoc.c \
 					pipex/pipex.c pipex/pipex_utils.c pipex/quote_splitter.c export.c \
-					unset.c
+					unset.c parser.c \
 
 OBJS 		=		$(addprefix objs/,$(SRCS:.c=.o))
 
-CFLAGS		=		-lreadline #-Wall -Wextra -Werror
+CFLAGS		=		-g -lreadline #-Wall -Wextra -Werror
 RM			=		rm -f
 
 NAME		= 		minishell
@@ -30,7 +30,7 @@ objs/%.o: srcs/%.c
 			@cc $(CFLAGS) -c $< -o $@
 
 $(NAME):    	$(OBJS)
-			@cc -g $(OBJS) $(CFLAGS) -o $(NAME)
+			@cc $(OBJS) $(CFLAGS) -o $(NAME)
 
 all:      	$(NAME)
 
