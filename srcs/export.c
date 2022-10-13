@@ -67,24 +67,19 @@ char **key_and_value(char *str)
     return (key_value);
 }
 
-void export(t_minithings *minithings, int flag)
+void export(t_minithings *minithings)
 {
     int i;
-    char **allvars;
     char **onevar;
     int ind;
 
     i = 0;
-    allvars = ft_split(minithings->cmds[0], 32);
-    if (ft_strncmp(allvars[0], "export", 6) == 0 && !allvars[1])
-    {
+    if (ft_strcmp(minithings->cmds[0][0], "export") == 0 && !minithings->cmds[0][1])
         show_export_list(minithings, 0);
-    }
-    else if (flag == 1)
-    {
-        while (allvars[++i])
+    else if (minithings->cmds[0][1])
+        while (minithings->cmds[0][++i])
         {
-            onevar = key_and_value(allvars[i]);
+            onevar = key_and_value(minithings->cmds[0][i]);
             if ((ind = check_duplicated(minithings->export, onevar[0])))
             {
                 if (onevar[1])
@@ -93,7 +88,4 @@ void export(t_minithings *minithings, int flag)
             else
                 add_export_node_back(minithings->export, add_export_node(onevar[0], onevar[1]));
         }
-    }
-    else
-        return;
 }

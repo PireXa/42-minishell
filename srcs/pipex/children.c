@@ -18,6 +18,12 @@ void execute(char **cmd, t_minithings *minithings, char **envp)
 	char	*path;
 
     i = -1;
+
+    if (is_builtin(cmd[0]))
+    {
+        builtins(minithings);
+        return;
+    }
     path = find_path(cmd[0], envp);
     if (!path)
 	{
@@ -27,14 +33,8 @@ void execute(char **cmd, t_minithings *minithings, char **envp)
         free(cmd);
         exit(EXIT_FAILURE);
     }
-    if (is_builtin(cmd[0]))
-    {
-        builtins(minithings, 0);
-    }
-    else
-    {
-        execve(path, cmd, envp);
-    }
+    execve(path, cmd, envp);
+//    sig_handler_block();
 }
 
 void child_one(char **cmds, t_minithings *minithings, char **envp)
@@ -50,6 +50,7 @@ void child_one(char **cmds, t_minithings *minithings, char **envp)
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
 		execute(cmds, minithings, envp);
+        exit(0);
 	}
 	else
 	{

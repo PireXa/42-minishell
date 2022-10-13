@@ -43,7 +43,7 @@ void unset(t_minithings *minithings)
     int j;
     char **inputs;
 
-    inputs = ft_split(minithings->line, ' ');
+    inputs = minithings->cmds[0];
     j = 1;
     while(inputs[j]) {
         i = check_duplicated(minithings->export, inputs[j]);

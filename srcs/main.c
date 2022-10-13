@@ -19,7 +19,7 @@ static t_minithings *build_export_table(t_minithings *minithings, char **envp)
 
     i = 0;
     envp_line = ft_split(envp[i], '=');
-    minithings->export = malloc(sizeof(t_exporttable));
+    minithings->export = malloc(sizeof(t_exporttable *));
     add_export_node_front(minithings->export, add_export_node(envp_line[0], envp_line[1]));
     i++;
     while (envp[i])
@@ -41,10 +41,10 @@ int main(int ac, char **av, char **envp)
     {
         sig_handler();
         minithings->line = readline(BLUE"amazing"YELLOW"shell: "RES);
-        minithings->cmds = parser(minithings->line);
-        add_history(minithings->line);
         if (!minithings->line)
             exit(1);
+        add_history(minithings->line);
+        minithings->cmds = parser(minithings->line, minithings->export);
         commands(minithings, envp);
     }
 }

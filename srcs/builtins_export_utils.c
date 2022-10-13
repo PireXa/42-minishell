@@ -95,12 +95,13 @@ void show_export_list(t_minithings *minithings, int flag)
     if (flag == 0)
     {
         ft_sort_list(tmp, ft_lstsize(tmp));
-        while (tmp) {
+        while (tmp)
+        {
             printf("declare -x %s=\"%s\"\n", tmp->key, tmp->value);
             tmp = tmp->next;
         }
     }
-    else
+    else if (flag == 1)
         while (tmp)
         {
             if (ft_strlen(tmp->value) > 0)
