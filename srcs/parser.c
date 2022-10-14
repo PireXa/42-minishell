@@ -349,12 +349,9 @@ char *only_$(char *input, int start, t_exporttable **export)
     char *var_value;
     char *key;
 
-    printf("start %d\n", start);
-    printf("input %c\n", input[start]);
     if (input[start] == '$')
         start++;
     key = str_space_dup(input, start, ' ');
-    printf("Key %s\n", key);
     var_value = search_export(export, key);
     free(key);
     return (var_value);
@@ -393,7 +390,6 @@ char ***parser(char *input, t_exporttable **export)
     if (!input)
         return (NULL);
     while (++i < size) {
-        printf("input[%d] = %c\n", i, input[i]);
         if (input[i] == ' ') {
             ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, ' ')));
             start = i + 1;
@@ -410,11 +406,9 @@ char ***parser(char *input, t_exporttable **export)
                 ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '"')));
             i += 1;
             start = i;
-            printf("ola\n");
         }
         else if (input[i] == '$')
         {
-            printf("DOLLAR\n");
             start = i;
             while (input[i] != ' ' && input[i] != '\0') {
                 i++;
