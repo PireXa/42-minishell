@@ -72,9 +72,8 @@ int pipe_counter(t_cmds *fds) {
     int i;
 
     i = 0;
-    printf("fds->cmd: %s\n", fds->cmd);
     while (fds) {
-        if (fds->cmd[0] == '|')
+        if (fds->cmd && fds->cmd[0] == '|')
             i++;
         fds = fds->next;
     }
@@ -89,7 +88,7 @@ int arg_ctr(t_cmds *fds, int nbr) {
     while (fds && nbr > 0) {
         if (nbr == 1)
             i++;
-        if (fds->cmd[0] == '|') {
+        if (fds->cmd && fds->cmd[0] == '|') {
             nbr--;
         }
         if (fds->next == NULL)
@@ -131,7 +130,6 @@ void    delete_linked_list(t_cmds *list)
     while (list)
     {
         tmp = list;
-        printf("tmp->cmd: %s\n", tmp->cmd);
         list = list->next;
         free(tmp->cmd);
         free(tmp);
@@ -248,7 +246,6 @@ int    get_var_name(char *input, int start, int divider, t_cmds **lst)
         ctr = 0;
         i--;
     }
-    print_stacks(*lst);
     return (var_len);
 }
 
@@ -276,7 +273,8 @@ void get_val_from_export(t_exporttable **export, t_cmds **vars)
         tmp2 = *export;
         tmp = tmp->next;
     }
-/*    printf("Values from export\n");
+/*
+    printf("Values from export\n");
     print_stacks(*vars);
 */
  }
@@ -330,17 +328,20 @@ char  *dollar_expansion(char *input, int start, int divider, t_exporttable **exp
 char *search_export(t_exporttable **export, char *key)
 {
     t_exporttable *tmp;
+    char *value;
 
     tmp = *export;
     while (tmp)
     {
         if (ft_strcmp(tmp->key, key) == 0) {
             printf("Found key %s\n", tmp->value);
-            return (tmp->value);
+            value = ft_strdup(tmp->value);
+            return (value);
         }
         tmp = tmp->next;
     }
-    return (NULL);
+    value = ft_strdup("");
+    return (value);
 }
 
 char *only_$(char *input, int start, t_exporttable **export)
@@ -348,13 +349,27 @@ char *only_$(char *input, int start, t_exporttable **export)
     char *var_value;
     char *key;
 
-    printf("input[%d] = %c\n", start + 1, input[start + 1]);
     key = str_space_dup(input, start + 1, ' ');
-    printf("key: %s\n", key);
     var_value = search_export(export, key);
     free(key);
-    printf("var_value: %s\n", var_value);
     return (var_value);
+}
+
+int uneven_quotes(char *input)
+{
+    int i;
+    int quotes;
+
+    i = -1;
+    quotes = 0;
+    while (input[++i])
+    {
+        if (input[i] == '"')
+            quotes++;
+    }
+    if (quotes % 2 != 0)
+        return (1);
+    return (0);
 }
 
 char ***parser(char *input, t_exporttable **export)
@@ -366,6 +381,10 @@ char ***parser(char *input, t_exporttable **export)
     int size = ft_strlen(input);
     int start = 0;
 
+    if (uneven_quotes(input) == 1) {
+        printf("Unclosed quotes\n");
+        return (NULL);
+    }
     if (!input)
         return (NULL);
     while (++i < size) {
@@ -415,7 +434,6 @@ char ***parser(char *input, t_exporttable **export)
         cmd[i] = cmd_maker(*cmds, i + 1);
     }
     cmd[i] = NULL;
-    print_stacks(*cmds);
     delete_linked_list(*cmds);
     free(cmds);
     return (cmd);

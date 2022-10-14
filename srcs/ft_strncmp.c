@@ -33,6 +33,8 @@ char	*ft_strdup(const char *s1)
     if (!str)
         return (NULL);
     i = 0;
+    if (!s1)
+        return (NULL);
     while (s1[i])
     {
         str[i] = s1[i];

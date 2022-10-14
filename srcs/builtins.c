@@ -67,8 +67,11 @@ void builtins(t_minithings *minithings)
             if (minithings->cmds[0][1][1] == 'n')
             {
                 i += 2;
-                while (minithings->cmds[0][++i])
+                while (minithings->cmds[0][++i]) {
                     printf("%s", minithings->cmds[0][i]);
+                    if (minithings->cmds[0][i][0] != '\0' && minithings->cmds[0][i + 1])
+                        printf(" ");
+                }
             }
             else
                 printf("Unknown option: %c\n", minithings->cmds[0][1][1]);
@@ -76,8 +79,11 @@ void builtins(t_minithings *minithings)
         else
         {
             i++;
-            while (minithings->cmds[0][++i])
+            while (minithings->cmds[0][++i]) {
                 printf("%s", minithings->cmds[0][i]);
+                if (minithings->cmds[0][i][0] != '\0' && minithings->cmds[0][i + 1])
+                    printf(" ");
+            }
             printf("\n");
         }
     }
