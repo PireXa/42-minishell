@@ -262,7 +262,7 @@ int    get_var_name(char *input, int start, int divider, t_cmds **lst)
     while (input[++i]) {
         while (input[i] && input[i] != '$')
             i++;
-        while (input[i] && input[++i] != ' ' && input[i] != divider) {
+        while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '\'') {
             ctr++;
         }
         ft_lstadd_back(lst, ft_lstnew(ft_strndup(input + i - ctr, ctr)));
@@ -322,7 +322,7 @@ void dollar_expanded(char *input, char *new_str, int start, int divider, t_cmds 
             g = -1;
             while (tmpvars->cmd[++g])
                 new_str[++j] = tmpvars->cmd[g];
-            while (input[++i] != ' ' && input[i] != divider)
+            while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '\'')
                 ;
             i--;
             tmpvars = tmpvars->next;
@@ -415,7 +415,16 @@ char ***parser(char *input, t_exporttable **export)
     if (!input)
         return (NULL);
     while (++i < size) {
-        if (input[i] == '"')
+        if (input[i] == '\'')
+        {
+            start = i + 1;
+            while (input[++i] != '\'')
+                ;
+            ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '\'')));
+            //i += 1;
+            start = i;
+        }
+        else if (input[i] == '"')
         {
             start = i + 1;
             while (input[++i] != '"')
@@ -464,7 +473,7 @@ char ***parser(char *input, t_exporttable **export)
     if (input[i - 1] == 32) {
         delete_last_node(*cmds);
     }
-    print_stacks(*cmds);
+//    print_stacks(*cmds);
     int cmd_ctr = pipe_counter(*cmds) + 1;
     char ***cmd;
     cmd = malloc(sizeof(char **) * (cmd_ctr + 1));
