@@ -119,4 +119,7 @@ char	*ft_strnstr(const char	*big, const char *little, size_t len);
 char	*find_path(char *cmd, char **envp);
 char ***parser(char *line, t_exporttable **export);
 
+void free_triple_pointer(char ***triple);
+void    print_triple_pointer(char ***triple);
+
 #endif
