@@ -69,8 +69,6 @@ void builtins(t_minithings *minithings)
                 i += 2;
                 while (minithings->cmds[0][++i]) {
                     printf("%s", minithings->cmds[0][i]);
-                    if (minithings->cmds[0][i][0] != '\0' && minithings->cmds[0][i + 1])
-                        printf(" ");
                 }
             }
             else
@@ -81,8 +79,6 @@ void builtins(t_minithings *minithings)
             i++;
             while (minithings->cmds[0][++i]) {
                 printf("%s", minithings->cmds[0][i]);
-                if (minithings->cmds[0][i][0] != '\0' && minithings->cmds[0][i + 1])
-                    printf(" ");
             }
             printf("\n");
         }
