@@ -100,14 +100,9 @@ char *str_super_dup(char *input, int start)
     new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 1));
     while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"'){
         new_str[++j] = input[i];
-    }/*
-    if (input[i] == ' ' && input[i + 1] != '$' )
-    {
-        printf("input[i] = %c\n", input[i]);
-        printf("input[i + 1] = %c\n", input[i + 1]);
-        printf("oi\n");
+    }
+    if (input[i] == ' ' && (input[i - 1] != '|' || input[i + 1] != '|'))
         new_str[++j] = ' ';
-    }*/
     new_str[++j] = '\0';
     return (new_str);
 }
@@ -405,6 +400,50 @@ int uneven_quotes(char *input, char duborsing)
     return (0);
 }
 
+int doublepointersize(char **input)
+{
+    int i;
+
+    i = 0;
+    while (input[i])
+        i++;
+    return (i);
+}
+
+void    cleanup(char ***cmd)
+{
+    int i;
+    int j;
+
+    i = 0;
+    j = 0;
+    while (cmd[i] != NULL)
+    {
+        if (ft_strcmp("echo " , cmd[i][0]) == 0)
+        {
+            while (cmd[i][j] != NULL)
+            {
+                if (j == 0 || j == doublepointersize(cmd[i]) - 1 && cmd[i][j][ft_strlen(cmd[i][j]) - 1] == ' ')
+                {
+                    cmd[i][j][ft_strlen(cmd[i][j]) - 1] = '\0';
+                    j++;
+                }
+                else
+                    j++;
+            }
+        }
+        else
+            while (cmd[i][j])
+            {
+                if (cmd[i][j][ft_strlen(cmd[i][j]) - 1] == ' ')
+                    cmd[i][j][ft_strlen(cmd[i][j]) - 1] = '\0';
+                j++;
+            }
+        i++;
+        j = 0;
+    }
+}
+
 char ***parser(char *input, t_exporttable **export)
 {
     t_cmds **cmds = (t_cmds **)malloc(sizeof(t_cmds *) * 1);
@@ -426,17 +465,36 @@ char ***parser(char *input, t_exporttable **export)
             start = i + 1;
             while (input[++i] != '\'')
                 ;
-            ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '\'')));
+            if (input[i + 1] == ' ')
+            {
+                char *str = str_space_dup(input, start, '\'');
+                ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str, " ")));
+                free(str);
+            }
+            else
+                ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '\'')));
         }
         else if (input[i] == '"')
         {
             start = i + 1;
             while (input[++i] != '"')
                 ;
-            if (ft_strchr(input + start, '$'))
-                ft_lstadd_back(cmds, ft_lstnew(dollar_expansion(input, start, '"', export)));
+            if (ft_strchr(input + start, '$')) {
+                if (input[i + 1] == ' ')
+                {
+                    char *str2 = dollar_expansion(input, start, '"', export);
+                    ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str2, " ")));
+                    free(str2);
+                }
+                else
+                    ft_lstadd_back(cmds, ft_lstnew(dollar_expansion(input, start, '"', export)));
+            }
             else
-                ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '"')));
+            {
+                char *str3 = str_space_dup(input, start, '"');
+                ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str3, " ")));
+                free(str3);
+            }
         }
         else if (input[i] == '$')
         {
@@ -469,5 +527,6 @@ char ***parser(char *input, t_exporttable **export)
     cmd[i] = NULL;
     delete_linked_list(*cmds);
     free(cmds);
+    cleanup(cmd);
     return (cmd);
 }
