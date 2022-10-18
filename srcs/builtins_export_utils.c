@@ -12,6 +12,20 @@
 
 #include"../inc/minishell.h"
 
+void    delete_export(t_exporttable *lst)
+{
+    t_exporttable *tmp;
+
+    while (lst)
+    {
+        tmp = lst;
+        lst = lst->next;
+        free(tmp->key);
+        free(tmp->value);
+        free(tmp);
+    }
+}
+
 void    ft_sort_list(t_exporttable *tab, int size)
 {
     int i;
@@ -69,7 +83,7 @@ int     check_duplicated(t_exporttable **export, char *str)
 
 void    value_modifier(t_exporttable **export, char *value, int i)
 {
-    indxexport(*export, i)->value = value;
+    indxexport(*export, i)->value = ft_strdup(value);
 }
 
 t_exporttable *copy_list(t_exporttable *list)
@@ -90,22 +104,25 @@ t_exporttable *copy_list(t_exporttable *list)
 void show_export_list(t_minithings *minithings, int flag)
 {
     t_exporttable *tmp;
+    t_exporttable *tmp2;
 
     tmp = copy_list(*minithings->export);
+    tmp2 = tmp;
     if (flag == 0)
     {
-        ft_sort_list(tmp, ft_lstsize(tmp));
-        while (tmp)
+        ft_sort_list(tmp, ft_lstsize(tmp2));
+        while (tmp2)
         {
-            printf("declare -x %s=\"%s\"\n", tmp->key, tmp->value);
-            tmp = tmp->next;
+            printf("declare -x %s=\"%s\"\n", tmp2->key, tmp2->value);
+            tmp2 = tmp2->next;
         }
     }
     else if (flag == 1)
-        while (tmp)
+        while (tmp2)
         {
-            if (ft_strlen(tmp->value) > 0)
-                printf("%s=%s\n", tmp->key, tmp->value);
-            tmp = tmp->next;
+            if (ft_strlen(tmp2->value) > 0)
+                printf("%s=%s\n", tmp2->key, tmp2->value);
+            tmp2 = tmp2->next;
         }
+    delete_export(tmp);
 }

@@ -80,7 +80,6 @@ int pipe_counter(t_cmds *fds) {
     return (i);
 }
 
-
 int str_super_len(char *input, int start){
     int i;
 
@@ -101,11 +100,17 @@ char *str_super_dup(char *input, int start)
     new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 1));
     while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"'){
         new_str[++j] = input[i];
-    }
+    }/*
+    if (input[i] == ' ' && input[i + 1] != '$' )
+    {
+        printf("input[i] = %c\n", input[i]);
+        printf("input[i + 1] = %c\n", input[i + 1]);
+        printf("oi\n");
+        new_str[++j] = ' ';
+    }*/
     new_str[++j] = '\0';
     return (new_str);
 }
-
 
 int arg_ctr(t_cmds *fds, int nbr) {
     int i;
@@ -233,7 +238,6 @@ char *ft_strndup(const char *s1, size_t n)
     return (str);
 }
 
-
 int ft_strlen_vars(t_cmds *vars)
 {
     int i;
@@ -255,9 +259,8 @@ int    get_var_name(char *input, int start, int divider, t_cmds **lst)
     int ctr;
     int var_len;
 
-    i = start -1;
+    i = start - 1;
     ctr = 0;
-    var_len = 0;
     var_len = 0;
     while (input[++i]) {
         while (input[i] && input[i] != '$')
@@ -274,7 +277,7 @@ int    get_var_name(char *input, int start, int divider, t_cmds **lst)
     return (var_len);
 }
 
-void get_val_from_export(t_exporttable **export, t_cmds **vars)
+void get_val_from_export(t_exporttable **export, t_cmds **vars, t_cmds **values)
 {
     t_cmds *tmp;
     t_exporttable *tmp2;
@@ -287,21 +290,19 @@ void get_val_from_export(t_exporttable **export, t_cmds **vars)
         {
             if (ft_strcmp(tmp->cmd, tmp2->key) == 0)
             {
-                free(tmp->cmd);
-                tmp->cmd = ft_strdup(tmp2->value);
+                //free(tmp->cmd);
+                ft_lstadd_back(values, ft_lstnew(ft_strdup(tmp2->value)));
                 break;
             }
             tmp2 = tmp2->next;
         }
         if (tmp2 == NULL)
-            tmp->cmd = ft_strdup("");
+            ft_lstadd_back(values, ft_lstnew(ft_strdup("")));
         tmp2 = *export;
         tmp = tmp->next;
     }
-/*
-    printf("Values from export\n");
-    print_stacks(*vars);
-*/
+/*    printf("Values from export\n");
+    print_stacks(*vars);*/
  }
 
 void dollar_expanded(char *input, char *new_str, int start, int divider, t_cmds **vars)
@@ -336,17 +337,22 @@ void dollar_expanded(char *input, char *new_str, int start, int divider, t_cmds 
 char  *dollar_expansion(char *input, int start, int divider, t_exporttable **export)
 {
     t_cmds   **vars;
+    t_cmds   **values;
     int     var_len;
     char   *new_str;
 
     vars = (t_cmds **)malloc(sizeof(t_cmds *) * 1);
     *vars = NULL;
+    values = (t_cmds **)malloc(sizeof(t_cmds *) * 1);
+    *values = NULL;
     var_len = get_var_name(input, start, divider, vars);
-    get_val_from_export(export, vars);
+    get_val_from_export(export, vars, values);
     new_str = (char *)malloc(sizeof(char) * (ft_str_ui_len(input, start, divider) - var_len + ft_strlen_vars(*vars) + 1));
-    dollar_expanded(input, new_str, start, divider, vars);
+    dollar_expanded(input, new_str, start, divider, values);
     delete_linked_list(*vars);
     free(vars);
+    delete_linked_list(*values);
+    free(values);
     return (new_str);
 }
 
@@ -382,7 +388,7 @@ char *only_$(char *input, int start, t_exporttable **export)
     return (var_value);
 }
 
-int uneven_quotes(char *input)
+int uneven_quotes(char *input, char duborsing)
 {
     int i;
     int quotes;
@@ -391,7 +397,7 @@ int uneven_quotes(char *input)
     quotes = 0;
     while (input[++i])
     {
-        if (input[i] == '"')
+        if (input[i] == duborsing)
             quotes++;
     }
     if (quotes % 2 != 0)
@@ -402,18 +408,18 @@ int uneven_quotes(char *input)
 char ***parser(char *input, t_exporttable **export)
 {
     t_cmds **cmds = (t_cmds **)malloc(sizeof(t_cmds *) * 1);
-    //*cmds = malloc(sizeof(t_cmds));
     *cmds = NULL;
     int i = -1;
     int size = ft_strlen(input);
-    int start = 0;
+    int start;
 
-    if (uneven_quotes(input) == 1) {
-        printf("Unclosed quotes\n");
-        return (NULL);
-    }
     if (!input)
         return (NULL);
+    if (uneven_quotes(input, '"') == 1 || uneven_quotes(input, '\'') == 1)
+    {
+        printf("Error: uneven quotes\n");
+        return (NULL);
+    }
     while (++i < size) {
         if (input[i] == '\'')
         {
@@ -421,8 +427,6 @@ char ***parser(char *input, t_exporttable **export)
             while (input[++i] != '\'')
                 ;
             ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '\'')));
-            //i += 1;
-            start = i;
         }
         else if (input[i] == '"')
         {
@@ -433,8 +437,6 @@ char ***parser(char *input, t_exporttable **export)
                 ft_lstadd_back(cmds, ft_lstnew(dollar_expansion(input, start, '"', export)));
             else
                 ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '"')));
-            //i += 1;
-            start = i;
         }
         else if (input[i] == '$')
         {
@@ -443,35 +445,18 @@ char ***parser(char *input, t_exporttable **export)
                 ;
             i--;
             ft_lstadd_back(cmds, ft_lstnew(only_$(input, start, export)));
-            /*if (input[i] != '\0')
-                start = i + 1;
-            else*/
-                start = i;
         }
         else if (input[i] == '|') {
             ft_lstadd_back(cmds, ft_lstnew(pipe_str()));
-            i += 1;
-            start = i;
         }
         else if (input[i] != ' ') {
-            /*printf("i %d\n", i);
-            printf("start %d\n", start);*/
             start = i;
             ft_lstadd_back(cmds, ft_lstnew(str_super_dup(input, start)));
             while (input[i] && input[i] != ' ' && input[i] != '$' && input[i] != '"') {
                 i++;
             }
             i--;
-            /*printf("final i %d\n", i);
-            printf("input[i] %c\n", input[i]);*/
-            start = i;
         }
-    }
-    /*if (!input[i - 3] || input[i - 3] != '\"') {
-        ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, ' ')));
-    }*/
-    if (input[i - 1] == 32) {
-        delete_last_node(*cmds);
     }
 //    print_stacks(*cmds);
     int cmd_ctr = pipe_counter(*cmds) + 1;

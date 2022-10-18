@@ -12,7 +12,7 @@
 
 #include"../inc/minishell.h"
 
-t_exporttable *add_export_node(void *key, void *value)
+t_exporttable *add_export_node(char *key, char *value)
 {
     t_exporttable *new;
 
@@ -21,8 +21,8 @@ t_exporttable *add_export_node(void *key, void *value)
         return (NULL);
     if (!value)
         value = "";
-    new->key = key;
-    new->value = value;
+    new->key = ft_strdup(key);
+    new->value = ft_strdup(value);
     new->next = NULL;
     return (new);
 }
@@ -45,6 +45,7 @@ void add_export_node_back(t_exporttable **lst, t_exporttable *new)
         return ;
     }
     tmp = *lst;
+    tmp->next = (*lst)->next;
     while (tmp->next)
         tmp = tmp->next;
     tmp->next = new;
@@ -56,7 +57,7 @@ char **key_and_value(char *str)
     int i;
 
     i = 0;
-    key_value = malloc(sizeof(char *) * 2);
+    key_value = malloc(sizeof(char *) * 3);
     while (str[i] && str[i] != '=')
         i++;
     key_value[0] = ft_substr(str, 0, i);
@@ -64,6 +65,7 @@ char **key_and_value(char *str)
         key_value[1] = ft_substr(str, i + 1, ft_strlen(str) - i);
     else
         key_value[1] = NULL;
+    key_value[2] = NULL;
     return (key_value);
 }
 
@@ -82,10 +84,14 @@ void export(t_minithings *minithings)
             onevar = key_and_value(minithings->cmds[0][i]);
             if ((ind = check_duplicated(minithings->export, onevar[0])))
             {
+                printf("MANO FDS\n");
                 if (onevar[1])
+                {
                     value_modifier(minithings->export, onevar[1], ind);
+                }
             }
             else
                 add_export_node_back(minithings->export, add_export_node(onevar[0], onevar[1]));
+            free_double_array(onevar);
         }
 }

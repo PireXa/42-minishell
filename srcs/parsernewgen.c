@@ -12,23 +12,6 @@
 
 #include"../inc/minishell.h"
 
-int uneven_quotes(char *input, char duborsing)
-{
-    int i;
-    int quotes;
-
-    i = -1;
-    quotes = 0;
-    while (input[++i])
-    {
-        if (input[i] == duborsing)
-            quotes++;
-    }
-    if (quotes % 2 != 0)
-        return (1);
-    return (0);
-}
-
 void    print_triple_pointer(char ***triple)
 {
     int i;

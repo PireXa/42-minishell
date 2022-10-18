@@ -38,7 +38,6 @@ void builtins(t_minithings *minithings)
     i = -1;
     if (ft_strncmp(minithings->cmds[0][0], "cd", 2) == 0)
     {
-        printf("cd\n");
         if (!minithings->cmds[0][1])
             chdir(getenv("HOME"));
         else {
