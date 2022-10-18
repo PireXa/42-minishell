@@ -83,7 +83,7 @@ char **quote_splitter(char *line);
 
 void export(t_minithings *minithings);
 void show_export_list(t_minithings *minithings, int flag);
-t_exporttable *add_export_node(void *key, void *value);
+t_exporttable *add_export_node(char *key, char *value);
 void add_export_node_front(t_exporttable **head, t_exporttable *new);
 void add_export_node_back(t_exporttable **lst, t_exporttable *new);
 t_exporttable 	*indxexport(t_exporttable *list, int index);
@@ -121,5 +121,6 @@ char ***parser(char *line, t_exporttable **export);
 
 void free_triple_pointer(char ***triple);
 void    print_triple_pointer(char ***triple);
+void free_double_array(char **array);
 
 #endif
