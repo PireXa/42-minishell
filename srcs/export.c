@@ -84,7 +84,6 @@ void export(t_minithings *minithings)
             onevar = key_and_value(minithings->cmds[0][i]);
             if ((ind = check_duplicated(minithings->export, onevar[0])))
             {
-                printf("MANO FDS\n");
                 if (onevar[1])
                 {
                     value_modifier(minithings->export, onevar[1], ind);

@@ -44,7 +44,7 @@ char **quote_splitter(char *line)
     flag = 0;
     tmp = ft_strchr(line, '"');
     if (tmp) {
-        *tmp++;
+        tmp++;
         res = ft_strchr(tmp, '"');
         if (res) {
             res = ft_strdupquote(tmp);

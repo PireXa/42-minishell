@@ -27,6 +27,7 @@ void execute(char **cmd, t_minithings *minithings, char **envp)
     path = find_path(cmd[0], envp);
     if (!path)
 	{
+        printf("minishell: command not found: %s\n", cmd[0]);
         while (cmd[++i]) {
             free(cmd[i]);
         }
