@@ -29,6 +29,7 @@
 
 # define YELLOW "\e[1;33m"
 # define BLUE "\e[1;34m"
+# define GREEN "\e[1;92m"
 # define RES "\e[0m"
 
 // BUFFER_SIZE FOR GNL
