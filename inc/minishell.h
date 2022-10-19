@@ -117,7 +117,7 @@ size_t	ft_strlcpy(char *dst, char *src, size_t size);
 
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strnstr(const char	*big, const char *little, size_t len);
-char	*find_path(char *cmd, char **envp);
+char	*find_path(char *cmd, t_exporttable **envp);
 char ***parser(char *line, t_exporttable **export);
 
 void free_triple_pointer(char ***triple);

@@ -24,7 +24,7 @@ void execute(char **cmd, t_minithings *minithings, char **envp)
         builtins(minithings);
         return;
     }
-    path = find_path(cmd[0], envp);
+    path = find_path(cmd[0], minithings->export);
     if (!path)
 	{
         printf("minishell: command not found: %s\n", cmd[0]);
