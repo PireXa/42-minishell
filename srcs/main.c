@@ -105,24 +105,17 @@ int main(int ac, char **av, char **envp)
 {
     t_minithings *minithings;
     char    *colorful_path;
-    /*int     i = -1;*/
 
     minithings = (t_minithings *)malloc(sizeof(t_minithings) * 2);
-    //minithings = build_export_table(minithings, envp);
     build_export_table(minithings, envp);
     while(ac != ft_strlen(av[ac]))
     {
         sig_handler();
         colorful_path = get_prompt();
         minithings->line = readline(colorful_path);
-        /*while(minithings->line[++i] == '\0')
-            printf("i = %d\n", i);
-        printf("i = %d\n", i);
-        i = -1;*/
         free(colorful_path);
-        if (!minithings->line) {
+        if (!minithings->line)
             exit(1);
-        }
         add_history(minithings->line);
         minithings->cmds = parser(minithings->line, minithings->export);
         if (minithings->cmds) {
@@ -132,7 +125,6 @@ int main(int ac, char **av, char **envp)
         else {
             free(minithings->cmds);
         }
-        //print_triple_pointer(minithings->cmds);
         free(minithings->line);
     }
 }

@@ -70,7 +70,6 @@ char	*find_path(char *cmd, t_exporttable **envp)
 void pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings)
 {
 	int		i;
-    int pid;
 
 	if (nbr_cmds >= 1) {
         i = 0;
@@ -79,11 +78,6 @@ void pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings)
         {
             child_one(cmds[i++], minithings, envp);
         }
-   /*     pid = fork();
-        if (pid == 0)
-        {
-        }*/
         execute(cmds[nbr_cmds - 1], minithings, envp);
-        //waitpid(pid, NULL, 0);
 	}
 }

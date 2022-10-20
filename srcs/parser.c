@@ -413,6 +413,8 @@ int doublepointersize(char **input)
     int i;
 
     i = 0;
+    if (input == NULL)
+        return (0);
     while (input[i])
         i++;
     return (i);
