@@ -18,7 +18,6 @@ void commands(t_minithings *minithings, char **envp)
     int pid;
 
     nbr_cmds = -1;
-    sig_handler_block();
     if (ft_strncmp(minithings->cmds[0][0], "exit", 4) == 0)
     {
         printf("exit\n");
@@ -30,10 +29,10 @@ void commands(t_minithings *minithings, char **envp)
         return;
     }
     pid = fork();
+    sig_handler_block();
     if (pid == 0)
     {
-        while (minithings->cmds[++nbr_cmds])
-            ;
+        while (minithings->cmds[++nbr_cmds]) { ; }
         pipex(nbr_cmds, minithings->cmds, envp, minithings);
         exit(0);
     }

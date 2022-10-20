@@ -45,7 +45,16 @@ void unset(t_minithings *minithings)
 
     inputs = minithings->cmds[0];
     j = 1;
-    while(inputs[j]) {
+    while(inputs[j])
+    {
+        if (ft_strchr(inputs[j], '='))
+        {
+            printf("amazingshell: unset: `");
+            printf(inputs[j], 2);
+            printf("': not a valid identifier\n");
+            j++;
+            continue ;
+        }
         i = check_duplicated(minithings->export, inputs[j]);
         if (i)
             delete_node(minithings->export, i);

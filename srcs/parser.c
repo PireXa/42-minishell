@@ -17,7 +17,7 @@ void    print_stacks(t_cmds *stck_a)
     printf("\n################\n");
     while (stck_a)
     {
-        printf("%s\n", stck_a->cmd);
+        printf("%s<-------\n", stck_a->cmd);
         stck_a = stck_a->next;
     }
     printf("\n################\n");
@@ -84,12 +84,12 @@ int str_super_len(char *input, int start){
     int i;
 
     i = start - 1;
-    while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"')
+    while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|')
         ;
     return (i);
 }
 
-char *str_super_dup(char *input, int start)
+char *str_super_dup(char *input, int start, int flag)
 {
     int i;
     int j;
@@ -97,11 +97,11 @@ char *str_super_dup(char *input, int start)
 
     i = start - 1;
     j = -1;
-    new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 2));
-    while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"'){
+    new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 1));
+    while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|'){
         new_str[++j] = input[i];
     }
-    if (input[i] == ' ' && (input[i - 1] != '|' || input[i + 1] != '|'))
+    if (input[i] == ' ' && input[i + 1] != '|' && flag != '$')
     {
         new_str[++j] = ' ';
         new_str[++j] = '\0';
@@ -385,7 +385,7 @@ char *only_$(char *input, int start, t_exporttable **export)
 
     if (input[start] == '$')
         start++;
-    key = str_super_dup(input, start);
+    key = str_super_dup(input, start, '$');
     var_value = search_export(export, key);
     free(key);
     return (var_value);
@@ -431,13 +431,14 @@ void    cleanup(char ***cmd)
         {
             while (cmd[i][j] != NULL)
             {
-                if (j == 0 || (j == doublepointersize(cmd[i]) - 1 && cmd[i][j][ft_strlen(cmd[i][j]) - 1] == ' '))
+                if (j == 0 || (j == doublepointersize(cmd[i]) && cmd[i][j][ft_strlen(cmd[i][j]) - 1] == ' '))
                 {
                     cmd[i][j][ft_strlen(cmd[i][j]) - 1] = '\0';
                     j++;
                 }
-                else
+                else{
                     j++;
+                }
             }
         }
         else
@@ -499,15 +500,20 @@ char ***parser(char *input, t_exporttable **export)
             }
             else
             {
-                char *str3 = str_space_dup(input, start, '"');
-                ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str3, " ")));
-                free(str3);
+                if (input[i + 1] == ' ')
+                {
+                    char *str3 = str_space_dup(input, start, '"');
+                    ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str3, " ")));
+                    free(str3);
+                }
+                else
+                    ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '"')));
             }
         }
         else if (input[i] == '$')
         {
             start = i;
-            while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"')
+            while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|')
                 ;
             i--;
             ft_lstadd_back(cmds, ft_lstnew(only_$(input, start, export)));
@@ -517,14 +523,14 @@ char ***parser(char *input, t_exporttable **export)
         }
         else if (input[i] != ' ') {
             start = i;
-            ft_lstadd_back(cmds, ft_lstnew(str_super_dup(input, start)));
-            while (input[i] && input[i] != ' ' && input[i] != '$' && input[i] != '"') {
+            ft_lstadd_back(cmds, ft_lstnew(str_super_dup(input, start, '0')));
+            while (input[i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|') {
                 i++;
             }
             i--;
         }
     }
-//    print_stacks(*cmds);
+    //print_stacks(*cmds);
     int cmd_ctr = pipe_counter(*cmds) + 1;
     char ***cmd;
     cmd = malloc(sizeof(char **) * (cmd_ctr + 1));
