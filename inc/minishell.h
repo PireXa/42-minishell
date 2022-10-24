@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MINISHELL                                          :+:      :+:    :+:   */
+/*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdas-nev <rdas-nev@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 4242/42/42 42:42:42 by rdas-nev          #+#    #+#             */
-/*   Updated: 4242/42/42 42:42:42 by rdas-nev         ###   ########.fr       */
+/*   Updated: 2022/10/21 16:39:50 by rdas-nev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ t_exporttable	*add_export_node(char *key, char *value);
 void			sig_handler(void);
 void			sig_handler_block(void);
 void			commands(t_minithings *minithings, char **envp);
-void			builtins(t_minithings *minithings);
+void			builtins(t_minithings *minithings, int indx);
 int				is_builtin(char *str);
 int				is_not_pipeable(char *str);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -78,7 +78,7 @@ char			*ft_strchr(const char *s, int c);
 char			*ft_strdup(const char *s1);
 char			*ft_substr(char const *s, int start, size_t len);
 char			**ft_split(char const *s, char c);
-void			pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings);
+void			pipex(int nbr_cmds, char ***cm, char **en, t_minithings *mt);
 char			*ft_strtrim(char *str);
 int				ft_strcmp(const char *s1, const char *s2);
 char			**quote_splitter(char *line);
@@ -102,8 +102,8 @@ char			*ft_substr(char const *s, int start, size_t len);
 char			*ft_strdup(const char *s1);
 char			*ft_strjoin(char *s1, char *s2);
 char			*ft_strchr(const char *s, int c);
-void			child_one(char **av, t_minithings *minithings, char **envp);
-void			execute(char **cmds, t_minithings *minithings, char **envp);
+void			child_one(char **av, t_minithings *mt, char **envp, int indx);
+void			execute(char **cmds, t_minithings *mt, char **envp, int indx);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
 char			*ft_exstrchr(char *s);
 char			*ft_strnldup(char *s1);
@@ -115,5 +115,6 @@ char			***parser(char *line, t_exporttable **export);
 void			free_triple_pointer(char ***triple);
 void			print_triple_pointer(char ***triple);
 void			free_double_array(char **array);
+int				doublepointersize(char **input);
 
 #endif
