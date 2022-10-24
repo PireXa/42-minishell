@@ -98,9 +98,8 @@ char *str_super_dup(char *input, int start, int flag)
     i = start - 1;
     j = -1;
     new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 2));
-    while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|'){
+    while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|' && input[i] != '\'')
         new_str[++j] = input[i];
-    }
     if (input[i] == ' ' && input[i + 1] != '|' && flag != '$')
     {
         new_str[++j] = ' ';
@@ -198,7 +197,7 @@ void    print_triple_pointer(char ***triple)
         printf("New Comand\n");
         while (triple[i][j])
         {
-            printf("%s\n", triple[i][j]);
+            printf("%s<---\n", triple[i][j]);
             j++;
         }
         i++;
@@ -483,7 +482,10 @@ char ***parser(char *input, t_exporttable **export)
                 free(str);
             }
             else
+            {
+                printf("Error: uneven quotes\n");
                 ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '\'')));
+            }
         }
         else if (input[i] == '"')
         {
@@ -526,9 +528,8 @@ char ***parser(char *input, t_exporttable **export)
         else if (input[i] != ' ') {
             start = i;
             ft_lstadd_back(cmds, ft_lstnew(str_super_dup(input, start, '0')));
-            while (input[i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|') {
+            while (input[i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|' && input[i] != '\'')
                 i++;
-            }
             i--;
         }
     }

@@ -118,6 +118,7 @@ int main(int ac, char **av, char **envp)
             exit(1);
         add_history(minithings->line);
         minithings->cmds = parser(minithings->line, minithings->export);
+        print_triple_pointer(minithings->cmds);
         if (minithings->cmds) {
             commands(minithings, envp);
             free_triple_pointer(minithings->cmds);
