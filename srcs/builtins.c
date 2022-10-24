@@ -31,62 +31,62 @@ int is_builtin(char *str)
     return (0);
 }
 
-void builtins(t_minithings *minithings)
+void builtins(t_minithings *minithings, int indx)
 {
     int i;
 
     i = -1;
-    if (ft_strncmp(minithings->cmds[0][0], "cd", 2) == 0)
+    if (ft_strcmp(minithings->cmds[indx][0], "cd") == 0)
     {
-        if (!minithings->cmds[0][1])
+        if (!minithings->cmds[indx][1])
             chdir(getenv("HOME"));
         else {
-            chdir(minithings->cmds[0][1]);
+            chdir(minithings->cmds[indx][1]);
         }
     }
-    else if (ft_strcmp(minithings->line, "pwd") == 0)
+    else if (ft_strcmp(minithings->cmds[indx][0], "pwd") == 0)
     {
         char cwd[1024];
         getcwd(cwd, sizeof(cwd));
         printf("%s\n", cwd);
     }
-    else if (ft_strcmp(minithings->cmds[0][0], "env") == 0)
+    else if (ft_strcmp(minithings->cmds[indx][0], "env") == 0)
     {
         show_export_list(minithings, 1);
     }
-    else if (ft_strncmp(minithings->cmds[0][0], "echo", 4) == 0)
+    else if (ft_strncmp(minithings->cmds[indx][0], "echo", 4) == 0)
     {
-        if (!minithings->cmds[0][1])
+        if (!minithings->cmds[indx][1])
         {
             printf("\n");
             return;
         }
-        if (minithings->cmds[0][1][0] == '-')
+        if (minithings->cmds[indx][1][0] == '-')
         {
-            if (minithings->cmds[0][1][1] == 'n')
+            if (minithings->cmds[indx][1][1] == 'n')
             {
                 i += 2;
-                while (minithings->cmds[0][++i]) {
-                    printf("%s", minithings->cmds[0][i]);
+                while (minithings->cmds[indx][++i]) {
+                    printf("%s", minithings->cmds[indx][i]);
                 }
             }
             else
-                printf("Unknown option: %c\n", minithings->cmds[0][1][1]);
+                printf("Unknown option: %c\n", minithings->cmds[indx][1][1]);
         }
         else
         {
             i++;
-            while (minithings->cmds[0][++i]) {
-                printf("%s", minithings->cmds[0][i]);
+            while (minithings->cmds[indx][++i]) {
+                printf("%s", minithings->cmds[indx][i]);
             }
             printf("\n");
         }
     }
-    else if (ft_strncmp(minithings->cmds[0][0], "export", 6) == 0)
+    else if (ft_strncmp(minithings->cmds[indx][0], "export", 6) == 0)
     {
         export(minithings);
     }
-    else if (ft_strncmp(minithings->cmds[0][0], "unset", 5) == 0)
+    else if (ft_strncmp(minithings->cmds[indx][0], "unset", 5) == 0)
     {
        unset(minithings);
     }

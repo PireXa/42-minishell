@@ -11,15 +11,14 @@
 # **************************************************************************** #
 
 SRCS		=		main.c sighandler.c commandsmaster.c builtins.c ft_strncmp.c \
-					listfuncs.c builtins_export_utils.c split.c \
+					listfuncs.c builtins_export_utils.c split.c unset.c  \
 					pipex/children.c pipex/ft_memcmp.c pipex/get_next_line.c \
-					pipex/get_next_line_utils.c pipex/heredoc.c \
-					pipex/pipex.c pipex/pipex_utils.c pipex/quote_splitter.c export.c \
-					unset.c parser.c \
+					pipex/get_next_line_utils.c pipex/heredoc.c parser.c \
+					pipex/pipex.c pipex/pipex_utils.c export.c \
 
 OBJS 		=		$(addprefix objs/,$(SRCS:.c=.o))
 
-CFLAGS		=		-g -lreadline #-Wall -Wextra -Werror
+CFLAGS		=		-g -Wall -Wextra -Werror
 RM			=		rm -f
 
 NAME		= 		minishell
@@ -30,7 +29,7 @@ objs/%.o: srcs/%.c
 			@cc $(CFLAGS) -c $< -o $@
 
 $(NAME):    	$(OBJS)
-			@cc $(OBJS) $(CFLAGS) -o $(NAME)
+			@cc $(OBJS) $(CFLAGS) -o $(NAME) -lreadline
 
 all:      	$(NAME)
 
@@ -39,4 +38,5 @@ clean:
 
 fclean:		clean
 			@$(RM) $(NAME)  
+
 re:         fclean all

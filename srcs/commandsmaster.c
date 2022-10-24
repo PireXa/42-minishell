@@ -173,11 +173,13 @@ void commands(t_minithings *minithings, char **envp)
         if (ft_strncmp(quad[i][0][0], "exit", 4) == 0)
         {
             printf("exit\n");
+            freequadpointer(quad);
             exit(1);
         }
         else if (is_builtin(quad[i][0][0]) && !quad[i][1])
         {
-            builtins(minithings);
+            builtins(minithings, 0);
+            freequadpointer(quad);
             return;
         }
         pid = fork();

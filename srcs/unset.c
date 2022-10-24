@@ -29,12 +29,17 @@ void	swap(t_exporttable *st)
 
 void delete_node(t_exporttable **export, int index)
 {
+    t_exporttable *tmp;
+
     if (index == 1)
     {
         swap(*export);
     }
-    free(indxexport(*export, index));
+    tmp = indxexport(*export, index);
     indxexport(*export, index - 1)->next = indxexport(*export, index + 1);
+    free(tmp->key);
+    free(tmp->value);
+    free(tmp);
 }
 
 void unset(t_minithings *minithings)

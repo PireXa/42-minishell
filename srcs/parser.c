@@ -97,7 +97,7 @@ char *str_super_dup(char *input, int start, int flag)
 
     i = start - 1;
     j = -1;
-    new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 1));
+    new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 2));
     while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|'){
         new_str[++j] = input[i];
     }
@@ -350,7 +350,7 @@ char  *dollar_expansion(char *input, int start, int divider, t_exporttable **exp
     *values = NULL;
     var_len = get_var_name(input, start, vars);
     get_val_from_export(export, vars, values);
-    new_str = (char *)malloc(sizeof(char) * (ft_str_ui_len(input, start, divider) - var_len + ft_strlen_vars(*vars) + 1));
+    new_str = (char *)malloc(sizeof(char) * (ft_str_ui_len(input, start, divider) - var_len + ft_strlen_vars(*vars) + 2));
     dollar_expanded(input, new_str, start, divider, values);
     delete_linked_list(*vars);
     free(vars);

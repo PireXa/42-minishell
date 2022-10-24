@@ -47,9 +47,9 @@ char	*find_path(char *cmd, t_exporttable **envp)
     tmp = *envp;
     if (access(cmd, F_OK) == 0)
         return (cmd);
-    while (ft_strnstr(tmp->key, "PATH", 4) == 0)
-		tmp = tmp->next;
-	paths = ft_split(tmp->value, ':');
+    while (ft_strnstr(tmp->key, "PATH", 4) == 0 && tmp->next != NULL)
+        tmp = tmp->next;
+    paths = ft_split(tmp->value, ':');
 	while (paths[i])
 	{
 		part_path = ft_strjoin(paths[i], "/");
@@ -72,12 +72,12 @@ void pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings)
 	int		i;
 
 	if (nbr_cmds >= 1) {
-        i = 0;
+        i = -1;
 
-        while (i < nbr_cmds - 1)
+        while (++i < nbr_cmds - 1)
         {
-            child_one(cmds[i++], minithings, envp);
+            child_one(cmds[i], minithings, envp, i);
         }
-        execute(cmds[nbr_cmds - 1], minithings, envp);
+        execute(cmds[nbr_cmds - 1], minithings, envp, i);
 	}
 }
