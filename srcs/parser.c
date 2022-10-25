@@ -483,7 +483,6 @@ char ***parser(char *input, t_exporttable **export)
             }
             else
             {
-                printf("Error: uneven quotes\n");
                 ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, start, '\'')));
             }
         }
@@ -519,8 +518,16 @@ char ***parser(char *input, t_exporttable **export)
             start = i;
             while (input[++i] && input[i] != ' ' && input[i] != '$' && input[i] != '"' && input[i] != '|')
                 ;
+            if (input[i] == ' ' && input[i + 1] != '|' && input[i + 1] && input[i + 1] != ' ') {
+                char *str5 = only_$(input, start, export);
+                char *str4 = ft_strdup(str5);
+                ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str4, " ")));
+                free(str4);
+                free(str5);
+            }
+            else
+                ft_lstadd_back(cmds, ft_lstnew(only_$(input, start, export)));
             i--;
-            ft_lstadd_back(cmds, ft_lstnew(only_$(input, start, export)));
         }
         else if (input[i] == '|') {
             ft_lstadd_back(cmds, ft_lstnew(pipe_str()));

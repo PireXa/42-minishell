@@ -101,6 +101,20 @@ static t_minithings *build_export_table(t_minithings *minithings, char **envp)
     return (minithings);
 }
 
+void free_export_table(t_exporttable *export)
+{
+    t_exporttable *tmp;
+
+    while (export)
+    {
+        tmp = export;
+        export = export->next;
+        free(tmp->key);
+        free(tmp->value);
+        free(tmp);
+    }
+}
+
 int main(int ac, char **av, char **envp)
 {
     t_minithings *minithings;
@@ -114,18 +128,20 @@ int main(int ac, char **av, char **envp)
         colorful_path = get_prompt();
         minithings->line = readline(colorful_path);
         free(colorful_path);
-        if (!minithings->line)
+        if (!minithings->line) {
+            free_export_table(*minithings->export);
             exit(1);
-        add_history(minithings->line);
-        minithings->cmds = parser(minithings->line, minithings->export);
-        print_triple_pointer(minithings->cmds);
-        if (minithings->cmds) {
-            commands(minithings, envp);
-            free_triple_pointer(minithings->cmds);
         }
-        else {
-            free(minithings->cmds);
+            add_history(minithings->line);
+        if (ft_strlen(minithings->line) > 0) {
+            minithings->cmds = parser(minithings->line, minithings->export);
+            if (minithings->cmds) {
+                commands(minithings, envp);
+                free_triple_pointer(minithings->cmds);
+            } else {
+                free(minithings->cmds);
+            }
+            free(minithings->line);
         }
-        free(minithings->line);
     }
 }
