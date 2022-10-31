@@ -10,11 +10,13 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRCS		=		main.c sighandler.c commandsmaster.c builtins.c ft_strncmp.c \
-					listfuncs.c builtins_export_utils.c split.c unset.c  \
-					pipex/children.c pipex/ft_memcmp.c pipex/get_next_line.c \
-					pipex/get_next_line_utils.c pipex/heredoc.c parser.c \
-					pipex/pipex.c pipex/pipex_utils.c export.c \
+SRCS		=		main.c sighandler.c \
+					builtins/builtins.c builtins/cd_pwd.c builtins/echo.c builtins/exit.c \
+					builtins/export.c builtins/export_utils.c builtins/unset.c \
+					exec/children.c exec/commandsmaster.c exec/gnl.c exec/gnl_utils.c \
+					exec/pipex.c exec/pipex_utils.c \
+					parser/parser.c parser/parser2.c\
+					utils/ft_strncmp.c utils/listfuncs.c utils/split.c \
 
 OBJS 		=		$(addprefix objs/,$(SRCS:.c=.o))
 
@@ -25,7 +27,10 @@ NAME		= 		minishell
 
 objs/%.o: srcs/%.c
 			@mkdir -p objs
-			@mkdir -p objs/pipex
+			@mkdir -p objs/builtins
+			@mkdir -p objs/exec
+			@mkdir -p objs/parser
+			@mkdir -p objs/utils
 			@cc $(CFLAGS) -c $< -o $@
 
 $(NAME):    	$(OBJS)
