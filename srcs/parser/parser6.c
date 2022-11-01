@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser2.c                                          :+:      :+:    :+:   */
+/*   parser6.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fde-albe <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 10:05:30 by fde-albe          #+#    #+#             */
-/*   Updated: 2022/11/01 12:17:33 by fde-albe         ###   ########.fr       */
+/*   Updated: 2022/11/01 14:22:32 by fde-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	cleanup_echo(char ***cmd, int i, int j)
 	while (cmd[i][j] != NULL)
 	{
 		if (j == 0 || (j == dpsize(cmd[i])
-					   && cmd[i][j][slen(cmd[i][j]) - 1] == ' '))
+				&& cmd[i][j][slen(cmd[i][j]) - 1] == ' '))
 		{
 			cmd[i][j][slen(cmd[i][j]) - 1] = '\0';
 			j++;
@@ -58,7 +58,7 @@ void	cleanup(char ***cmd)
 }
 
 char	*dollar_expansion(char *input, int start,
-						  int divider, t_exporttable **export)
+		int divider, t_exporttable **export)
 {
 	t_cmds		**vars;
 	t_cmds		**values;
@@ -74,7 +74,7 @@ char	*dollar_expansion(char *input, int start,
 	var_len = get_var_name(input, i[0], vars);
 	get_val_from_export(export, vars, values);
 	new_str = (char *)malloc(sizeof(char) * (ft_str_ui_len(input,
-														   i[0], i[1]) - var_len + ft_strlen_vars(*values) + 2));
+					i[0], i[1]) - var_len + ft_strlen_vars(*values) + 2));
 	dollar_expanded(input, new_str, i, values);
 	delete_linked_list(*vars);
 	free(vars);

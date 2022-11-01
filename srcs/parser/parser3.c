@@ -76,7 +76,7 @@ int	str_super_len(char *in, int start)
 
 	i = start - 1;
 	while (in[++i] && in[i] != 32 && in[i] != 36 && in[i] != 34
-		   && in[i] != '|')
+		&& in[i] != '|')
 		;
 	return (i);
 }

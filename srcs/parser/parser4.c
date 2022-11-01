@@ -22,7 +22,7 @@ char	*str_super_dup(char *input, int start, int flag)
 	j = -1;
 	new_str = (char *)malloc(sizeof(char) * (str_super_len(input, start) + 2));
 	while (input[++i] && input[i] != ' ' && input[i] != '$'
-		   && input[i] != '"' && input[i] != '|' && input[i] != '\'')
+		&& input[i] != '"' && input[i] != '|' && input[i] != '\'')
 		new_str[++j] = input[i];
 	if (input[i] == ' ' && input[i + 1] != '|' && flag != '$')
 	{

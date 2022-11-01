@@ -120,8 +120,6 @@ void	do_things(t_minithings *mt, char **envp)
 	char	*exitvalue;
 
 	mt->cmds = parser(mt->line, mt->export);
-	free_triple_pointer(mt->cmds);
-	exit(0);
 	if (mt->cmds)
 	{
 		commands(mt, envp);

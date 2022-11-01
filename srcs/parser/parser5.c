@@ -60,7 +60,7 @@ int	get_var_name(char *in, int start, t_cmds **lst)
 		if (in[i] == '$')
 			i++;
 		while (in[i] && in[i] != ' ' && in[i] != '$'
-			   && in[i] != '"' && in[i++] != '\'')
+			&& in[i] != '"' && in[i++] != '\'')
 			ctr++;
 		ft_lstadd_back(lst, ft_lstnew(
 				ft_strndup(in + i - ctr, ctr)));
@@ -116,7 +116,7 @@ void	dollar_expanded(char *in, char *new_str, int *ij, t_cmds **vars)
 			while (tmpvars->cmd[++g])
 				new_str[++j] = tmpvars->cmd[g];
 			while (in[++i] && in[i] != ' ' && in[i] != '$'
-				   && in[i] != '"' && in[i] != '\'')
+				&& in[i] != '"' && in[i] != '\'')
 				;
 			i--;
 			tmpvars = tmpvars->next;
