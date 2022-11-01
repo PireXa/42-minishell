@@ -26,35 +26,46 @@ void	delete_export(t_exporttable *lst)
 	}
 }
 
-void	ft_sort_list(t_exporttable *l, int size)
+void	sortlistutils2(t_exporttable *l, int *i_j, char *tkey, char *tvalue)
 {
-	int		i;
-	int		j;
+	char	*tmpkey2;
+	char	*tmpvalue2;
+
+	tmpkey2 = ind(l, i_j[1])->k;
+	ind(l, i_j[0])->k = tmpkey2;
+	ind(l, i_j[1])->k = tkey;
+	tmpvalue2 = ind(l, i_j[1])->value;
+	ind(l, i_j[0])->value = tmpvalue2;
+	ind(l, i_j[1])->value = tvalue;
+}
+
+void	sortlistutils(t_exporttable *l, int *i)
+{
 	char	*tmpkey;
 	char	*tmpvalue;
 
-	i = 0;
-	while (i < size)
+	if (ft_strncmp(ind(l, i[0])->k, ind(l, i[1])->k, slen(ind(l, i[0])->k)) > 0)
 	{
-		j = i + 1;
-		while (j < size)
+		tmpkey = ind(l, i[0])->k;
+		tmpvalue = ind(l, i[0])->value;
+		sortlistutils2(l, i, tmpkey, tmpvalue);
+	}
+}
+
+void	ft_sort_list(t_exporttable *l, int size)
+{
+	int		*i_j;
+
+	i_j = (int [2]){0, 0};
+	while (i_j[0] < size)
+	{
+		i_j[1] = i_j[0] + 1;
+		while (i_j[1] < size)
 		{
-			if (ft_strncmp(ind(l, i)->k, ind(l, j)->k, slen(ind(l, i)->k)) > 0)
-			{
-				tmpkey = ind(l, i)->k;
-				tmpvalue = ind(l, i)->value;
-				char	*tmpkey2;
-				tmpkey2 = ind(l, j)->k;
-				ind(l, i)->k = tmpkey2;
-				ind(l, j)->k = tmpkey;
-				char	*tmpvalue2;
-				tmpvalue2 = ind(l, j)->value;
-				ind(l, i)->value = tmpvalue2;
-				ind(l, j)->value = tmpvalue;
-			}
-			j++;
+			sortlistutils(l, i_j);
+			i_j[1]++;
 		}
-		i++;
+		i_j[0]++;
 	}
 }
 
@@ -85,13 +96,13 @@ int	check_duplicated(t_exporttable **export, char *str)
 	return (0);
 }
 
-void	value_modifier(t_exporttable **export, char *value, int i)
+void	valmod(t_exporttable **export, char *value, int i, t_minithings *mt)
 {
 	ind(*export, i)->value = ft_strdup(value);
-	change_errorcode(export, "0");
+	write(mt->wcode, "0\n", 2);
 }
 
-t_exporttable	*copy_list(t_exporttable *export)
+t_exporttable	*copy_list(t_exporttable *export, t_minithings *minithings)
 {
 	t_exporttable	*new;
 	t_exporttable	*tmp;
@@ -99,11 +110,21 @@ t_exporttable	*copy_list(t_exporttable *export)
 	new = NULL;
 	while (export)
 	{
-		tmp = envvaradd(export->k, export->value, &export);
+		tmp = envvaradd(export->k, export->value, minithings);
 		nodeback(&new, tmp);
 		export = export->next;
 	}
 	return (new);
+}
+
+void	showenv(t_exporttable *tmp2)
+{
+	while (tmp2)
+	{
+		if (slen(tmp2->value) > 0)
+			printf("%s=%s\n", tmp2->k, tmp2->value);
+		tmp2 = tmp2->next;
+	}
 }
 
 void	show_export_list(t_minithings *minithings, int flag)
@@ -111,7 +132,7 @@ void	show_export_list(t_minithings *minithings, int flag)
 	t_exporttable	*tmp;
 	t_exporttable	*tmp2;
 
-	tmp = copy_list(*minithings->export);
+	tmp = copy_list(*minithings->export, minithings);
 	tmp2 = tmp;
 	if (flag == 0)
 	{
@@ -124,14 +145,7 @@ void	show_export_list(t_minithings *minithings, int flag)
 		}
 	}
 	else
-	{
-		while (tmp2)
-		{
-			if (slen(tmp2->value) > 0)
-				printf("%s=%s\n", tmp2->k, tmp2->value);
-			tmp2 = tmp2->next;
-		}
-	}
+		showenv(tmp2);
 	delete_export(tmp);
-	change_errorcode(minithings->export, "0");
+	write(minithings->wcode, "0\n", 2);
 }

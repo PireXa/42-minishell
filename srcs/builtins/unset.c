@@ -43,6 +43,14 @@ void	delete_node(t_exporttable **export, int index)
 	free(tmp1);
 }
 
+void	change_unset_exitcode(t_minithings *minithings, int error)
+{
+	if (error)
+		change_errorcode(minithings->export, "1");
+	else
+		change_errorcode(minithings->export, "0");
+}
+
 void	unset(t_minithings *minithings)
 {
 	int		i;
@@ -68,8 +76,5 @@ void	unset(t_minithings *minithings)
 			delete_node(minithings->export, i);
 		j++;
 	}
-	if (error)
-		change_errorcode(minithings->export, "1");
-	else
-		change_errorcode(minithings->export, "0");
+	change_unset_exitcode(minithings, error);
 }

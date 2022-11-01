@@ -12,9 +12,9 @@
 
 #include"../../inc/minishell.h"
 
-int ft_isnumber(char *str)
+int	ft_isnumber(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -26,10 +26,10 @@ int ft_isnumber(char *str)
 	return (1);
 }
 
-int ft_atoi(char *str)
+int	ft_atoi(const char *str)
 {
-	int i;
-	int res;
+	int	i;
+	int	res;
 
 	i = 0;
 	res = 0;
@@ -39,6 +39,52 @@ int ft_atoi(char *str)
 		i++;
 	}
 	return (res);
+}
+
+char	*ft_strrev(char *str)
+{
+	int		i;
+	int		j;
+	char	c;
+
+	i = 0;
+	j = slen(str) - 1;
+	while (i < j)
+	{
+		c = str[i];
+		str[i] = str[j];
+		str[j] = c;
+		i++;
+		j--;
+	}
+	return (str);
+}
+
+char	*ft_itoa(int n)
+{
+	char	*str;
+	int		i;
+	int		neg;
+
+	i = 0;
+	neg = 0;
+	if (n < 0)
+	{
+		neg = 1;
+		n = -n;
+	}
+	str = malloc(sizeof(char) * 12);
+	if (!str)
+		return (NULL);
+	while (n > 0)
+	{
+		str[i++] = n % 10 + '0';
+		n = n / 10;
+	}
+	if (neg)
+		str[i++] = '-';
+	str[i] = '\0';
+	return (ft_strrev(str));
 }
 
 void	exitin(char ****quad, t_minithings *minithings, int i)
@@ -56,7 +102,7 @@ void	exitin(char ****quad, t_minithings *minithings, int i)
 		else if (quad[i][0][2])
 		{
 			printf("exit: too many arguments\n");
-			change_errorcode(minithings->export, "1");
+			write(minithings->wcode, "1\n", 2);
 			return ;
 		}
 		else

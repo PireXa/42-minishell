@@ -12,38 +12,38 @@
 
 #include"../../inc/minishell.h"
 
-void	cd(t_minithings *minithings, int indx)
+void	cd(t_minithings *mt, int indx)
 {
-	if (!minithings->cmds[indx][1])
+	if (!mt->cmds[indx][1])
 	{
 		if (chdir(getenv("HOME")) != 0)
 		{
 			printf("amazingshell: cd: HOME not set\n");
-			change_errorcode(minithings->export, "1");
+			write(mt->wcode, "1\n", 2);
 		}
 		else
-			change_errorcode(minithings->export, "0");
+			write(mt->wcode, "0\n", 2);
 	}
-	else if (minithings->cmds[indx][2])
+	else if (mt->cmds[indx][2])
 	{
 		printf("amazingshell: cd: too many arguments\n");
-		change_errorcode(minithings->export, "1");
+		write(mt->wcode, "1\n", 2);
 	}
-	else if (chdir(minithings->cmds[indx][1]) != 0)
+	else if (chdir(mt->cmds[indx][1]) != 0)
 	{
 		printf("amazingshell: cd: ");
-		printf("%s: No such file or directory\n", minithings->cmds[indx][1]);
-		change_errorcode(minithings->export, "1");
+		printf("%s: No such file or directory\n", mt->cmds[indx][1]);
+		write(mt->wcode, "1\n", 2);
 	}
 	else
-		change_errorcode(minithings->export, "0");
+		write(mt->wcode, "0\n", 2);
 }
 
-void	pwd(t_minithings *minithings)
+void	pwd(t_minithings *mt)
 {
 	char	cwd[1024];
 
 	getcwd(cwd, sizeof(cwd));
 	printf("%s\n", cwd);
-	change_errorcode(minithings->export, "0");
+	write(mt->wcode, "0\n", 2);
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser2.c                                       	:+:      :+:    :+:   */
+/*   parser2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fde-albe <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/31 10:05:30 by fde-albe          #+#    #+#             */
-/*   Updated: 2022/10/31 15:32:10 by fde-albe         ###   ########.fr       */
+/*   Updated: 2022/11/01 12:17:33 by fde-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,14 @@
 
 t_parser	barra(t_parser ctr, char *input, t_cmds **cmds)
 {
+	char	*str;
+
 	ctr.start = ctr.i + 1;
 	while (input[++ctr.i] != '\'')
 		;
 	if (input[ctr.i + 1] == ' ')
 	{
-		char *str = str_space_dup(input, ctr.start, '\'');
+		str = str_space_dup(input, ctr.start, '\'');
 		ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str, " ")));
 		free(str);
 	}
@@ -28,72 +30,89 @@ t_parser	barra(t_parser ctr, char *input, t_cmds **cmds)
 	return (ctr);
 }
 
-t_parser	aspas(t_parser ctr, char *input, t_cmds **cmds, t_exporttable **export)
+void	aspas_dollar(t_parser ctr, char *input,
+		t_cmds **cmds, t_exporttable **export)
+{
+	char	*str2;
+
+	if (input[ctr.i + 1] == ' ')
+	{
+		str2 = dollar_expansion(input, ctr.start, '"', export);
+		ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str2, " ")));
+		free(str2);
+	}
+	else
+		ft_lstadd_back(cmds, ft_lstnew(
+				dollar_expansion(input, ctr.start, '"', export)));
+}
+
+void	aspas_no_dollar(t_parser ctr, char *input, t_cmds **cmds)
+{
+	char	*str;
+
+	if (input[ctr.i + 1] == ' ')
+	{
+		str = str_space_dup(input, ctr.start, '"');
+		ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str, " ")));
+		free(str);
+	}
+	else
+		ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, ctr.start, '"')));
+}
+
+t_parser	aspas(t_parser ctr, char *input,
+		t_cmds **cmds, t_exporttable **export)
 {
 	ctr.start = ctr.i + 1;
 	while (input[++ctr.i] != '"')
 		;
 	if (ft_strchr(input + ctr.start, '$'))
-	{
-		if (input[ctr.i + 1] == ' ')
-		{
-			char *str2 = dollar_expansion(input, ctr.start, '"', export);
-			ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str2, " ")));
-			free(str2);
-		}
-		else
-			ft_lstadd_back(cmds, ft_lstnew(dollar_expansion(input, ctr.start, '"', export)));
-	}
+		aspas_dollar(ctr, input, cmds, export);
 	else
-	{
-		if (input[ctr.i + 1] == ' ')
-		{
-			char *str3 = str_space_dup(input, ctr.start, '"');
-			ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str3, " ")));
-			free(str3);
-		}
-		else
-			ft_lstadd_back(cmds, ft_lstnew(str_space_dup(input, ctr.start, '"')));
-	}
+		aspas_no_dollar(ctr, input, cmds);
 	return (ctr);
 }
 
-t_parser	dollar(t_parser ctr, char *input, t_cmds **cmds, t_exporttable **export)
+t_parser	dollar(t_parser ctr, char *i,
+		t_cmds **cmds, t_exporttable **export)
 {
 	char	*str5;
 	char	*str4;
 
 	ctr.start = ctr.i;
-	while (input[++ctr.i] && input[ctr.i] != ' ' && input[ctr.i] != '$' && input[ctr.i] != '"' && input[ctr.i] != '|')
+	while (i[++ctr.i] && i[ctr.i] != ' '
+		&& i[ctr.i] != '$' && i[ctr.i] != '"' && i[ctr.i] != '|')
 		;
-	if (input[ctr.i] == ' ' && input[ctr.i + 1] != '|' && input[ctr.i + 1] && input[ctr.i + 1] != ' ')
+	if (i[ctr.i] == ' ' && i[ctr.i + 1] != '|'
+		&& i[ctr.i + 1] && i[ctr.i + 1] != ' ')
 	{
-		str5 = only_z(input, ctr.start, export);
+		str5 = only_z(i, ctr.start, export);
 		str4 = ft_strdup(str5);
 		ft_lstadd_back(cmds, ft_lstnew(ft_strjoin(str4, " ")));
 		free(str4);
 		free(str5);
 	}
 	else
-		ft_lstadd_back(cmds, ft_lstnew(only_z(input, ctr.start, export)));
+		ft_lstadd_back(cmds, ft_lstnew(only_z(i, ctr.start, export)));
 	ctr.i--;
 	return (ctr);
 }
 
-t_parser	every(t_parser ctr, char *input, t_cmds **cmds)
+t_parser	every(t_parser ctr, char *i, t_cmds **cmds)
 {
 	ctr.start = ctr.i;
-	ft_lstadd_back(cmds, ft_lstnew(str_super_dup(input, ctr.start, '0')));
-	while (input[ctr.i] && input[ctr.i] != ' ' && input[ctr.i] != '$' && input[ctr.i] != '"' && input[ctr.i] != '|' && input[ctr.i] != '\'')
+	ft_lstadd_back(cmds, ft_lstnew(str_super_dup(i, ctr.start, '0')));
+	while (i[ctr.i] && i[ctr.i] != ' ' && i[ctr.i] != '$'
+		&& i[ctr.i] != '"' && i[ctr.i] != '|' && i[ctr.i] != '\'')
 		ctr.i++;
 	ctr.i--;
 	return (ctr);
 }
 
-char ***return_parser(t_parser ctr, t_cmds **cmds)
+char	***return_parser(t_parser ctr, t_cmds **cmds)
 {
-	char ***cmd;
-	int cmd_ctr;
+	char	***cmd;
+	int		cmd_ctr;
 
 	cmd_ctr = pipe_counter(*cmds) + 1;
 	cmd = malloc(sizeof(char **) * (cmd_ctr + 1));
@@ -107,7 +126,7 @@ char ***return_parser(t_parser ctr, t_cmds **cmds)
 	return (cmd);
 }
 
-char ***ez_parsing(t_parser ctr, char *input, t_exporttable **export)
+char	***ez_parsing(t_parser ctr, char *input, t_exporttable **export)
 {
 	t_cmds		**cmds;
 

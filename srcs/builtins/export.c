@@ -12,7 +12,7 @@
 
 #include"../../inc/minishell.h"
 
-t_exporttable	*envvaradd(char *key, char *value, t_exporttable **export)
+t_exporttable	*envvaradd(char *key, char *value, t_minithings *mt)
 {
 	t_exporttable	*new;
 
@@ -22,7 +22,7 @@ t_exporttable	*envvaradd(char *key, char *value, t_exporttable **export)
 	if (ft_strcmp(key, "") == 0)
 	{
 		printf("amazingshell: export: `=%s': not a valid identifier\n", value);
-		change_errorcode(export, "1");
+		write(mt->wcode, "1\n", 2);
 		return (NULL);
 	}
 	if (!value)
@@ -119,6 +119,22 @@ void	change_errorcode(t_exporttable **export, char *code)
 	}
 	free(tmp->value);
 	tmp->value = ft_strdup(code);
+	tmp->value[slen(tmp->value) - 1] = '\0';
+}
+
+void	mod_or_add(t_minithings *mt, int ind, char **var)
+{
+	if (ind)
+	{
+		if (var[1])
+			valmod(mt->export, var[1], ind, mt);
+	}
+	else
+	{
+		nodeback(mt->export, envvaradd(var[0], var[1], mt));
+		write(mt->wcode, "0\n", 2);
+	}
+	free_double_array(var);
 }
 
 void	export(t_minithings *mt)
@@ -137,14 +153,7 @@ void	export(t_minithings *mt)
 		{
 			var = key_and_value(mt->cmds[0], mt->line, i);
 			ind = check_duplicated(mt->export, var[0]);
-			if (ind)
-			{
-				if (var[1])
-					value_modifier(mt->export, var[1], ind);
-			}
-			else
-				nodeback(mt->export, envvaradd(var[0], var[1], mt->export));
-			free_double_array(var);
+			mod_or_add(mt, ind, var);
 		}
 	}
 	free(i);

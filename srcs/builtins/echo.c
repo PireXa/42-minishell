@@ -29,27 +29,27 @@ static void	echo_option(t_minithings *minithings, int indx, int i)
 	}
 }
 
-void	echo(t_minithings *minithings, int indx)
+void	echo(t_minithings *mt, int indx)
 {
 	int	i;
 
 	i = -1;
-	if (!minithings->cmds[indx][1])
+	if (!mt->cmds[indx][1])
 	{
 		printf("\n");
-		change_errorcode(minithings->export, "0");
+		write(mt->wcode, "0\n", 2);
 		return ;
 	}
-	if (minithings->cmds[indx][1][0] == '-')
-		echo_option(minithings, indx, i);
+	if (mt->cmds[indx][1][0] == '-')
+		echo_option(mt, indx, i);
 	else
 	{
 		i++;
-		while (minithings->cmds[indx][++i])
+		while (mt->cmds[indx][++i])
 		{
-			printf("%s", minithings->cmds[indx][i]);
+			printf("%s", mt->cmds[indx][i]);
 		}
 		printf("\n");
 	}
-	change_errorcode(minithings->export, "0");
+	write(mt->wcode, "0\n", 2);
 }

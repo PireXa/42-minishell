@@ -66,7 +66,7 @@ char	*find_path(char *cmd, t_exporttable **envp)
 	return (0);
 }
 
-void	pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings)
+void	pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *mt)
 {
 	int	i;
 
@@ -75,8 +75,8 @@ void	pipex(int nbr_cmds, char ***cmds, char **envp, t_minithings *minithings)
 		i = -1;
 		while (++i < nbr_cmds - 1)
 		{
-			child_one(cmds[i], minithings, envp, i);
+			child_one(cmds[i], mt, envp, i);
 		}
-		execute(cmds[nbr_cmds - 1], minithings, envp, i);
+		execute(cmds[nbr_cmds - 1], mt, envp, i);
 	}
 }
