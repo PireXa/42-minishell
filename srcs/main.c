@@ -79,7 +79,7 @@ char	*get_prompt(void)
 	return (prompt);
 }
 
-static t_minithings	*build_export_table(t_minithings *mt, char **envp)
+void	build_export_table(t_minithings *mt, char **envp)
 {
 	int		i;
 	char	**el;
@@ -98,7 +98,6 @@ static t_minithings	*build_export_table(t_minithings *mt, char **envp)
 		i++;
 	}
 	mt->wcode = open("objs/exitfile", O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	return (mt);
 }
 
 void	free_export_table(t_exporttable *export)
@@ -108,11 +107,12 @@ void	free_export_table(t_exporttable *export)
 	while (export)
 	{
 		tmp = export;
-		export = export->next;
 		free(tmp->k);
 		free(tmp->value);
+		export = export->next;
 		free(tmp);
 	}
+	free(export);
 }
 
 void	do_things(t_minithings *mt, char **envp)
@@ -157,6 +157,8 @@ int	main(int ac, char **av, char **envp)
 		if (!mt->line)
 		{
 			free_export_table(*mt->export);
+			free(mt->export);
+			free(mt);
 			write(1, "exit\n", 5);
 			exit(0);
 		}

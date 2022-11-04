@@ -25,20 +25,24 @@ char	*only_z(char *input, int start, t_exporttable **export)
 	return (var_value);
 }
 
-int	uneven_quotes(char *input, char duborsing)
+int	uneven_quotes(char *input)
 {
 	int	i;
-	int	quotes;
 
 	i = -1;
-	quotes = 0;
 	while (input[++i])
 	{
-		if (input[i] == duborsing)
-			quotes++;
+		if (input[i] == '"')
+		{
+			while (input[++i] != '"')
+				if (input[i] == '\0')
+					return (1);
+		}
+		else if (input[i] == '\'')
+			while(input[++i] != '\'')
+				if (input[i] == '\0')
+					return (1);
 	}
-	if (quotes % 2 != 0)
-		return (1);
 	return (0);
 }
 
@@ -64,13 +68,14 @@ char	***parser(char *input, t_exporttable **export)
 {
 	t_parser	*ctr;
 
-	ctr = (t_parser *)malloc(sizeof(t_parser));
-	if (!input)
+	if (!input) {
 		return (NULL);
-	if (uneven_quotes(input, '"') == 1 || uneven_quotes(input, '\'') == 1)
+	}
+	if (uneven_quotes(input) == 1)
 	{
 		quotes(export);
 		return (NULL);
 	}
+	ctr = (t_parser *)malloc(sizeof(t_parser));
 	return (ez_parsing(ctr, input, export));
 }
