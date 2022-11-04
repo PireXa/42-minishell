@@ -42,14 +42,14 @@ char	*find_path(char *cmd, t_exporttable **envp)
 	char			*part_path;
 	t_exporttable	*tmp;
 
-	i = 0;
+	i = -1;
 	tmp = *envp;
 	if (access(cmd, F_OK) == 0)
 		return (cmd);
 	while (ft_strnstr(tmp->k, "PATH", 4) == 0 && tmp->next != NULL)
 		tmp = tmp->next;
 	paths = ft_split(tmp->value, ':');
-	while (paths[i])
+	while (paths[++i])
 	{
 		part_path = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(part_path, cmd);
@@ -57,12 +57,9 @@ char	*find_path(char *cmd, t_exporttable **envp)
 		if (access(path, F_OK) == 0)
 			return (path);
 		free(path);
-		i++;
 	}
 	i = -1;
-	while (paths[++i])
-		free(paths[i]);
-	free(paths);
+	free_double_array(paths);
 	return (0);
 }
 

@@ -31,6 +31,9 @@ void	execute(char **cmd, t_minithings *mt, char **envp, int indx)
 		while (cmd[++i])
 			free(cmd[i]);
 		free(cmd);
+		free_export_table(*mt->export);
+		free(mt->export);
+		free_triple_pointer(mt->cmds);
 		exit(EXIT_FAILURE);
 	}
 	write(mt->wcode, "0\n", 2);

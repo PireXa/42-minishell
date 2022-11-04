@@ -39,7 +39,7 @@ int	uneven_quotes(char *input)
 					return (1);
 		}
 		else if (input[i] == '\'')
-			while(input[++i] != '\'')
+			while (input[++i] != '\'')
 				if (input[i] == '\0')
 					return (1);
 	}
@@ -68,7 +68,8 @@ char	***parser(char *input, t_exporttable **export)
 {
 	t_parser	*ctr;
 
-	if (!input) {
+	if (!input)
+	{
 		return (NULL);
 	}
 	if (uneven_quotes(input) == 1)

@@ -30,7 +30,7 @@ t_parser	*barra(t_parser *ctr, char *input, t_cmds **cmds)
 	return (ctr);
 }
 
-void	aspas_dollar(t_parser *ctr, char *input,
+void	adollar(t_parser *ctr, char *input,
 					t_cmds **cmds, t_exporttable **export)
 {
 	char	*str2;

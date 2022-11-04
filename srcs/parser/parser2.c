@@ -19,7 +19,7 @@ t_parser	*aspas(t_parser *ctr, char *input,
 	while (input[++ctr->i] != '"')
 		;
 	if (ft_strchr(input + ctr->start, '$'))
-		aspas_dollar(ctr, input, cmds, export);
+		adollar(ctr, input, cmds, export);
 	else
 		aspas_no_dollar(ctr, input, cmds);
 	return (ctr);
