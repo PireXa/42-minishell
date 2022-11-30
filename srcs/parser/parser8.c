@@ -12,41 +12,31 @@
 
 #include "../../inc/minishell.h"
 
-extern char	*g_ec;
-
-void	*ft_memset(void *b, int c, size_t len)
+int	pipepipe(char *input)
 {
-	unsigned char	*ptr;
+	int	flag;
+	int	i;
 
-	ptr = b;
-	while (len-- > 0)
-		*ptr++ = c;
-	return (b);
-}
-
-void	ft_bzero(void *s, size_t n)
-{
-	ft_memset(s, 0, n);
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	void	*ptr;
-
-	ptr = (void *)malloc(count * size);
-	if (!ptr)
-		exit(0);
-	ft_bzero(ptr, count * size);
-	return (ptr);
-}
-
-void	megafree(t_minithings *mt)
-{
-	free_export_table(*mt->export);
-	free(mt->export);
-	free(mt->line);
-	free(mt->efpath);
-	free(mt);
-	write(1, "exit\n", 5);
-	exit(0);
+	flag = 0;
+	i = -1;
+	while (input[++i])
+	{
+		if (input[i] == '\'')
+		{
+			if (flag == 0)
+				flag = 1;
+			else if (flag == 1)
+				flag = 0;
+		}
+		else if (input[i] == '"')
+		{
+			if (flag == 0)
+				flag = 2;
+			else if (flag == 2)
+				flag = 0;
+		}
+		if (input[i] == '|' && input[i + 1] == '|' && flag == 0)
+			return (1);
+	}
+	return (0);
 }

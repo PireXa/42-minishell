@@ -71,13 +71,15 @@ void	ft_sort_list(t_exporttable *l, int size)
 
 t_exporttable	*ind(t_exporttable *list, int index)
 {
-	int	i;
+	int				i;
+	t_exporttable	*tmp;
 
 	i = 0;
+	tmp = list;
 	while (i < index)
 	{
-		list = list->next;
+		tmp = tmp->next;
 		i++;
 	}
-	return (list);
+	return (tmp);
 }

@@ -30,17 +30,26 @@ void	swap(t_exporttable *st)
 void	delete_node(t_exporttable **export, int index)
 {
 	t_exporttable	*tmp;
-	t_exporttable	*tmp1;
+	t_exporttable	*prev;
 
-	if (index == 1)
-		swap(*export);
-	tmp = ind(*export, index);
-	tmp1 = ind(*export, index + 1);
-	ind(*export, index - 1)->next = tmp1;
+	tmp = *export;
+	if (index == 0)
+	{
+		*export = tmp->next;
+		free(tmp->k);
+		free(tmp->value);
+		free(tmp);
+		return ;
+	}
+	while (index--)
+	{
+		prev = tmp;
+		tmp = tmp->next;
+	}
+	prev->next = tmp->next;
 	free(tmp->k);
 	free(tmp->value);
 	free(tmp);
-	free(tmp1);
 }
 
 void	change_unset_exitcode(t_minithings *minithings, int error)
@@ -60,6 +69,7 @@ void	unset(t_minithings *minithings)
 
 	inputs = minithings->cmds[0];
 	j = 1;
+	error = 0;
 	while (inputs[j])
 	{
 		if (ft_strchr(inputs[j], '='))

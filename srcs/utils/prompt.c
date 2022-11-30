@@ -12,42 +12,59 @@
 
 #include"../../inc/minishell.h"
 
-t_cmds	*ft_lstnew(void *content)
+char	*ft_strjoin_triple(char *s1, char *s2, char *s3)
 {
-	t_cmds	*new;
+	char	*str;
+	int		i;
+	int		j;
+	int		l;
 
-	new = malloc(sizeof(t_list));
-	if (!new)
-		return (NULL);
-	new->cmd = content;
-	new->next = NULL;
-	return (new);
+	i = -1;
+	j = -1;
+	l = -1;
+	str = (char *)malloc(sizeof(char) * (slen(s1) + slen(s2) + slen(s3) + 1));
+	while (s1[++i])
+		str[i] = s1[i];
+	while (s2[++j])
+		str[i + j] = s2[j];
+	while (s3[++l])
+		str[i + j + l] = s3[l];
+	str[i + j + l] = '\0';
+	return (str);
 }
 
-void	ft_lstaddback(t_cmds **lst, t_cmds *new)
+char	*paint_prompt(char *str, char *color)
 {
-	t_cmds	*tmp;
+	char	*tmp;
 
-	if (*lst == NULL)
-	{
-		*lst = new;
-		return ;
-	}
-	tmp = *lst;
-	while (tmp->next)
-		tmp = tmp->next;
-	tmp->next = new;
+	tmp = ft_strjoin_triple(color, str, RES);
+	free(str);
+	return (tmp);
 }
 
-int	ft_lstsize(t_exporttable *lst)
+char	*paint_prompt_2(char *str, char *color)
 {
-	int	i;
+	char	*tmp;
 
-	i = 0;
-	while (lst)
-	{
-		lst = lst->next;
-		i++;
-	}
-	return (i);
+	tmp = ft_strjoin_triple(color, str, RES);
+	return (tmp);
+}
+
+char	*get_prompt(void)
+{
+	char	*prompt;
+	char	*cwd;
+	char	*user;
+	char	*tmp;
+
+	cwd = getcwd(NULL, 0);
+	user = getenv("USER");
+	cwd = paint_prompt(cwd, YELLOW);
+	user = paint_prompt_2(user, GREEN);
+	tmp = ft_strjoin_triple(user, ":", cwd);
+	prompt = ft_strjoin_triple(tmp, " $> ", "");
+	free(tmp);
+	free(cwd);
+	free(user);
+	return (prompt);
 }

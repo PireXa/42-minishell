@@ -12,6 +12,8 @@
 
 #include"../../inc/minishell.h"
 
+int	g_ec = 0;
+
 void	free_double_array(char **array)
 {
 	int	i;
@@ -26,11 +28,15 @@ void	build_export_table(t_minithings *mt, char **envp)
 {
 	int		i;
 	char	**el;
+	char	tmp[1024];
 
 	i = 0;
 	el = ft_split(envp[i], '=');
+	getcwd(tmp, sizeof(tmp));
+	mt->efpath = ft_strjoin(tmp, "/e");
 	mt->export = malloc(sizeof(t_exporttable *));
 	(*mt->export) = NULL;
+	mt->wcode = open(mt->efpath, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	nodefront(mt->export, envvaradd("?", "0", mt));
 	free_double_array(el);
 	while (envp[i])
@@ -40,7 +46,6 @@ void	build_export_table(t_minithings *mt, char **envp)
 		free_double_array(el);
 		i++;
 	}
-	mt->wcode = open("objs/exitfile", O_WRONLY | O_CREAT | O_TRUNC, 0777);
 }
 
 void	free_export_table(t_exporttable *export)
@@ -60,27 +65,24 @@ void	free_export_table(t_exporttable *export)
 
 void	do_things(t_minithings *mt, char **envp)
 {
-	char	*exitvalue;
-
+	if (g_ec != 0)
+		exitcode_gvar(mt);
 	mt->cmds = parser(mt->line, mt->export);
 	if (mt->cmds)
 	{
-		commands(mt, envp);
+		if (redirections(mt, envp))
+			;
+		else
+			commands(mt, envp);
 		free_triple_pointer(mt->cmds);
-		mt->rcode = open("objs/exitfile", O_RDONLY);
-		exitvalue = get_next_line(mt->rcode);
-		while (exitvalue)
-		{
-			if (slen(exitvalue) > 0)
-				change_errorcode(mt->export, exitvalue);
-			free(exitvalue);
-			exitvalue = get_next_line(mt->rcode);
-		}
-		free(exitvalue);
-		close(mt->rcode);
+		exitcode_file(mt);
 	}
 	else
+	{
+		printf("minishell: parsing error\n");
+		change_errorcode(mt->export, "1\n");
 		free(mt->cmds);
+	}
 	free(mt->line);
 }
 
@@ -89,7 +91,7 @@ int	main(int ac, char **av, char **envp)
 	t_minithings	*mt;
 	char			*colorful_path;
 
-	mt = (t_minithings *) malloc(sizeof(t_minithings) * 2);
+	mt = (t_minithings *) malloc(sizeof(t_minithings));
 	build_export_table(mt, envp);
 	while (ac != slen(av[ac]))
 	{
@@ -98,15 +100,16 @@ int	main(int ac, char **av, char **envp)
 		mt->line = readline(colorful_path);
 		free(colorful_path);
 		if (!mt->line)
+			megafree(mt);
+		if (!only_space(mt->line))
 		{
-			free_export_table(*mt->export);
-			free(mt->export);
-			free(mt);
-			write(1, "exit\n", 5);
-			exit(0);
+			add_history(mt->line);
+			if (slen(mt->line) > 0)
+				do_things(mt, envp);
 		}
-		add_history(mt->line);
-		if (slen(mt->line) > 0)
-			do_things(mt, envp);
+		else
+		{
+			free(mt->line);
+		}
 	}
 }

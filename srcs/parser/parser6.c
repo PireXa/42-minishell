@@ -33,7 +33,7 @@ void	cleanup_else(char ***cmd, int i, int j)
 {
 	while (cmd[i][j])
 	{
-		if (cmd[i][j][slen(cmd[i][j]) - 1] == ' ')
+		if (slen(cmd[i][j]) && cmd[i][j][slen(cmd[i][j]) - 1] == ' ')
 			cmd[i][j][slen(cmd[i][j]) - 1] = '\0';
 		j++;
 	}

@@ -12,9 +12,26 @@
 
 #include"../../inc/minishell.h"
 
+void	til(t_minithings *mt, int indx)
+{
+	chdir(getenv("HOME"));
+	if (chdir(mt->cmds[indx][1] + 2) != 0)
+	{
+		printf("minishell: %s: Invalid directory\n", mt->cmds[indx][1]);
+		write(mt->wcode, "1\n", 2);
+	}
+	else
+		write(mt->wcode, "0\n", 2);
+}
+
 void	cd(t_minithings *mt, int indx)
 {
-	if (!mt->cmds[indx][1])
+	if (mt->cmds[indx][2])
+	{
+		printf("amazingshell: cd: too many arguments\n");
+		write(mt->wcode, "1\n", 2);
+	}
+	else if (!mt->cmds[indx][1] || ft_strcmp(mt->cmds[indx][1], "~") == 0)
 	{
 		if (chdir(getenv("HOME")) != 0)
 		{
@@ -24,15 +41,11 @@ void	cd(t_minithings *mt, int indx)
 		else
 			write(mt->wcode, "0\n", 2);
 	}
-	else if (mt->cmds[indx][2])
-	{
-		printf("amazingshell: cd: too many arguments\n");
-		write(mt->wcode, "1\n", 2);
-	}
+	else if (mt->cmds[indx][1][0] == '~' && mt->cmds[indx][1][1] == '/')
+		til(mt, indx);
 	else if (chdir(mt->cmds[indx][1]) != 0)
 	{
-		printf("amazingshell: cd: ");
-		printf("%s: No such file or directory\n", mt->cmds[indx][1]);
+		printf("minishell: %s: Invalid directory\n", mt->cmds[indx][1]);
 		write(mt->wcode, "1\n", 2);
 	}
 	else

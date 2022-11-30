@@ -17,8 +17,10 @@ char	*only_z(char *input, int start, t_exporttable **export)
 	char	*var_value;
 	char	*key;
 
-	if (input[start] == '$')
+	if (input[start] == '$' && input[start + 1] && input[start + 1] != ' ')
 		start++;
+	else
+		return (ft_strdup("$"));
 	key = str_super_dup(input, start, '$');
 	var_value = search_export(export, key);
 	free(key);

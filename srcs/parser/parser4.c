@@ -43,7 +43,7 @@ int	arg_ctr(t_cmds *fds, int nbr)
 	{
 		if (nbr == 1)
 			i++;
-		if (fds->cmd && fds->cmd[0] == '|')
+		if (fds->cmd && fds->cmd[0] == '|' && fds->cmd[1] != ' ')
 			nbr--;
 		if (fds->next == NULL)
 			i++;
@@ -63,7 +63,7 @@ char	**cmd_maker(t_cmds *fds, int nbr)
 	cmd = malloc(sizeof(char *) * (argn + 1));
 	while (nbr > 1 && fds->next)
 	{
-		if (fds->cmd[0] == '|' || fds->next == NULL)
+		if ((fds->cmd[0] == '|' && fds->cmd[1] != ' ') || fds->next == NULL)
 			nbr--;
 		fds = fds->next;
 	}

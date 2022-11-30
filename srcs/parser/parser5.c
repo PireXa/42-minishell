@@ -44,7 +44,7 @@ int	ft_strlen_vars(t_cmds *vars)
 	return (i);
 }
 
-int	get_var_name(char *in, int start, t_cmds **lst)
+int	get_var_name(char *n, int start, t_cmds **lst)
 {
 	int	i;
 	int	ctr;
@@ -53,17 +53,18 @@ int	get_var_name(char *in, int start, t_cmds **lst)
 	i = start - 1;
 	ctr = 0;
 	var_len = 0;
-	while (in[++i])
+	while (n[++i])
 	{
-		while (in[i] && in[i] != '$')
+		while (n[i] && n[i] != '$')
 			i++;
-		if (in[i] == '$')
+		if (n[i] == '$')
 			i++;
-		while (in[i] && in[i] != ' ' && in[i] != '$'
-			&& in[i] != '"' && in[i++] != '\'')
+		while (n[i] != 34 && n[i] != ' ' && n[i] != '$' && n[i] != 39 && n[i])
+		{
+			i++;
 			ctr++;
-		ft_lstadd_back(lst, ft_lstnew(
-				ft_strndup(in + i - ctr, ctr)));
+		}
+		ft_lstaddback(lst, ft_lstnew(ft_strndup(n + i - ctr, ctr)));
 		if (ctr != 0)
 			var_len += ctr + 1;
 		ctr = 0;
@@ -82,17 +83,19 @@ void	get_val_from_export(t_exporttable **export,
 	tmp2 = *export;
 	while (tmp)
 	{
+		if (ft_strcmp(tmp->cmd, "") == 0)
+			ft_lstaddback(values, ft_lstnew(ft_strdup("$")));
 		while (tmp2)
 		{
 			if (ft_strcmp(tmp->cmd, tmp2->k) == 0)
 			{
-				ft_lstadd_back(values, ft_lstnew(ft_strdup(tmp2->value)));
+				ft_lstaddback(values, ft_lstnew(ft_strdup(tmp2->value)));
 				break ;
 			}
 			tmp2 = tmp2->next;
 		}
 		if (tmp2 == NULL)
-			ft_lstadd_back(values, ft_lstnew(ft_strdup("")));
+			ft_lstaddback(values, ft_lstnew(ft_strdup("")));
 		tmp2 = *export;
 		tmp = tmp->next;
 	}

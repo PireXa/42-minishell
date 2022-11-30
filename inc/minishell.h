@@ -28,13 +28,12 @@
 // COLORS
 
 # define YELLOW "\e[1;33m"
-# define BLUE "\e[1;34m"
 # define GREEN "\e[1;92m"
 # define RES "\e[0m"
 
 // BUFFER_SIZE FOR GNL
 
-# define BUFFER_SIZE 100
+# define BUFFER_SIZE 10
 
 // Structures
 
@@ -62,6 +61,7 @@ typedef struct s_lists
 	t_exporttable	**export;
 	char			*line;
 	char			***cmds;
+	char			*efpath;
 	int				wcode;
 	int				rcode;
 }				t_minithings;
@@ -82,7 +82,7 @@ typedef struct s_path {
 
 // Functions
 
-t_exporttable	*envvaradd(char *key, char *value, t_minithings *mt);
+t_exporttable	*envvaradd(char *k, char *v, t_minithings *mt);
 void			sig_handler(void);
 void			sig_handler_block(void);
 void			commands(t_minithings *minithings, char **envp);
@@ -99,14 +99,14 @@ void			export(t_minithings *mt);
 void			show_export_list(t_minithings *minithings, int flag);
 void			nodefront(t_exporttable **head, t_exporttable *new);
 void			nodeback(t_exporttable **lst, t_exporttable *new);
-t_exporttable	*ind(t_exporttable *list, int index);
+t_exporttable	*ind(t_exporttable *tmp, int index);
 int				ft_lstsize(t_exporttable *lst);
 int				check_duplicated(t_exporttable **export, char *str);
 void			valmod(t_exporttable **exp, char *v, int i, t_minithings *mt);
 void			unset(t_minithings *minithings);
 void			ft_sort_list(t_exporttable *l, int size);
 t_cmds			*ft_lstnew(void *content);
-void			ft_lstadd_back(t_cmds **lst, t_cmds *new);
+void			ft_lstaddback(t_cmds **lst, t_cmds *new);
 char			**ft_split(char const *s, char c);
 int				slen(const char *str);
 char			*ft_substr(char const *s, int start, size_t len);
@@ -127,7 +127,6 @@ void			free_triple_pointer(char ***triple);
 void			free_double_array(char **array);
 int				dpsize(char **input);
 int				ft_isnumber(char *str);
-char			*ft_itoa(int c);
 t_parser		*barra(t_parser *ctr, char *input, t_cmds **cmds);
 t_parser		*aspas(t_parser *ct, char *i, t_cmds **c, t_exporttable **e);
 char			*only_z(char *input, int start, t_exporttable **export);
@@ -147,7 +146,7 @@ void			change_errorcode(t_exporttable **export, char *code);
 void			echo(t_minithings *mt, int indx);
 void			cd(t_minithings *mt, int indx);
 void			pwd(t_minithings *mt);
-void			exitin(char ****quad, t_minithings *minithings, int i);
+void			exitin(char ****quad, t_minithings *mt, int i);
 void			freequadpointer(char ****quad);
 char			*get_next_line(int fd);
 void			freequadpointer(char ****quad);
@@ -157,7 +156,6 @@ char			***copytriple(char ***cmds, int s, int end);
 int				*searchlastls(char ***cmds);
 void			delete_export(t_exporttable *lst);
 char			*get_prompt(void);
-
 int				ft_str_ui_len(const char *s, int start, int letra);
 char			*pipe_str(void);
 char			*str_space_dup(const char *s1, int start, int letra);
@@ -170,17 +168,27 @@ void			delete_linked_list(t_cmds *list);
 void			free_triple_pointer(char ***triple);
 char			*ft_strndup(const char *s1, size_t n);
 int				ft_strlen_vars(t_cmds *vars);
-int				get_var_name(char *in, int start, t_cmds **lst);
+int				get_var_name(char *n, int start, t_cmds **lst);
 void			get_val_from_export(t_exporttable **e, t_cmds **a, t_cmds **v);
 void			dollar_expanded(char *in, char *new_str, int *ij, t_cmds **v);
 void			cleanup(char ***cmd);
 char			*dollar_expansion(char *i, int s, int d, t_exporttable **e);
 char			*search_export(t_exporttable **export, char *key);
-void			print_triple_pointer(char ***triple);
 t_parser		*barra(t_parser *ctr, char *input, t_cmds **cmds);
 void			adollar(t_parser *ct, char *i, t_cmds **c, t_exporttable **e);
 void			aspas_no_dollar(t_parser *ctr, char *input, t_cmds **cmds);
 char			*get_prompt(void);
 int				ft_strstr_index(char *str, char *to_find);
 void			free_export_table(t_exporttable *export);
+int				only_space(char *str);
+void			megafree(t_minithings *mt);
+char			*ft_itoa(int n);
+void			*missing_command_after_pipe(t_parser *ctr, t_cmds **cmds);
+t_cmds			*ft_last_cmd(t_cmds *cmds);
+void			exitcode_gvar(t_minithings *mt);
+void			exitcode_file(t_minithings *mt);
+int				pipepipe(char *input);
+int				redirections(t_minithings *mt, char **envp);
+int				redirects(int ac, char **av, char **envp);
+
 #endif

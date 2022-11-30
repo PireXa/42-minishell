@@ -10,26 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"../../inc/minishell.h"
+#include"pipex_bonus.h"
 
-void	execute(char **cmd, t_minithings *mt, char **envp, int indx)
+void	exec(char *av, char **envp)
 {
+	int		i;
+	char	**cmd;
 	char	*path;
 
-	if (is_builtin(cmd[0]))
+	i = -1;
+	cmd = ft_spit(av, ' ');
+	path = findpath(cmd[0], envp);
+	if (!path)
 	{
-		builtins(mt, indx);
-		return ;
+		while (cmd[++i])
+			free(cmd[i]);
+		free(cmd);
+		exit(EXIT_FAILURE);
 	}
-	path = find_path(cmd[0], mt->export);
-	write(mt->wcode, "0\n", 2);
-	execve(path, cmd, envp);
-	free(path);
-	printf("Error: command not found: %s\n", cmd[0]);
-	write(mt->wcode, "127\n", 4);
+	if (execve(path, cmd, envp) == -1)
+		exit(EXIT_FAILURE);
 }
 
-void	child_one(char **cmds, t_minithings *mt, char **envp, int indx)
+void	childone(char *av, char **envp)
 {
 	pid_t	pid;
 	int		fd[2];
@@ -41,8 +44,7 @@ void	child_one(char **cmds, t_minithings *mt, char **envp, int indx)
 	{
 		close(fd[0]);
 		dup2(fd[1], STDOUT_FILENO);
-		execute(cmds, mt, envp, indx);
-		exit(0);
+		exec(av, envp);
 	}
 	else
 	{

@@ -68,3 +68,17 @@ char	*get_prompt(void)
 	free(user);
 	return (prompt);
 }
+
+int	only_space(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != ' ')
+			return (0);
+		i++;
+	}
+	return (1);
+}

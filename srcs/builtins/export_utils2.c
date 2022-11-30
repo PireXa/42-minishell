@@ -70,7 +70,12 @@ void	show_export_list(t_minithings *minithings, int flag)
 		while (tmp2)
 		{
 			if (tmp2->k[0] != '?')
-				printf("declare -x %s=\"%s\"\n", tmp2->k, tmp2->value);
+			{
+				if (slen(tmp2->value) > 0)
+					printf("declare -x %s=\"%s\"\n", tmp2->k, tmp2->value);
+				else
+					printf("declare -x %s\n", tmp2->k);
+			}
 			tmp2 = tmp2->next;
 		}
 	}

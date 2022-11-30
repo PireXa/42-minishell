@@ -36,7 +36,7 @@ void	echo(t_minithings *mt, int indx)
 	i = -1;
 	if (!mt->cmds[indx][1])
 	{
-		printf("\n");
+		write(1, "\n", 1);
 		write(mt->wcode, "0\n", 2);
 		return ;
 	}
@@ -47,9 +47,9 @@ void	echo(t_minithings *mt, int indx)
 		i++;
 		while (mt->cmds[indx][++i])
 		{
-			printf("%s", mt->cmds[indx][i]);
+			write(1, mt->cmds[indx][i], slen(mt->cmds[indx][i]));
 		}
-		printf("\n");
+		write(1, "\n", 1);
 	}
 	write(mt->wcode, "0\n", 2);
 }

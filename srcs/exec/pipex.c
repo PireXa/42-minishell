@@ -34,32 +34,40 @@ char	*ft_strnstr(const char	*big, const char *little, size_t len)
 	return (0);
 }
 
+char	*normi(t_path *path)
+{
+	char	*tmp;
+
+	free_double_array(path->paths);
+	tmp = ft_strdup(path->path);
+	free(path->path);
+	free(path);
+	return (tmp);
+}
+
 char	*find_path(char *cmd, t_exporttable **envp)
 {
-	char			**paths;
-	char			*path;
-	int				i;
-	char			*part_path;
-	t_exporttable	*tmp;
+	t_path	*path;
 
-	i = -1;
-	tmp = *envp;
 	if (access(cmd, F_OK) == 0)
-		return (cmd);
-	while (ft_strnstr(tmp->k, "PATH", 4) == 0 && tmp->next != NULL)
-		tmp = tmp->next;
-	paths = ft_split(tmp->value, ':');
-	while (paths[++i])
+		return (ft_strdup(cmd));
+	path = malloc(sizeof(t_path));
+	path->i = -1;
+	path->tmp = *envp;
+	while (ft_strnstr(path->tmp->k, "PATH", 4) == 0 && path->tmp->next != NULL)
+		path->tmp = path->tmp->next;
+	path->paths = ft_split(path->tmp->value, ':');
+	while (path->paths[++path->i])
 	{
-		part_path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(part_path, cmd);
-		free(part_path);
-		if (access(path, F_OK) == 0)
-			return (path);
-		free(path);
+		path->part_path = ft_strjoin(path->paths[path->i], "/");
+		path->path = ft_strjoin(path->part_path, cmd);
+		free(path->part_path);
+		if (access(path->path, F_OK) == 0)
+			return (normi(path));
+		free(path->path);
 	}
-	i = -1;
-	free_double_array(paths);
+	free_double_array(path->paths);
+	free(path);
 	return (0);
 }
 

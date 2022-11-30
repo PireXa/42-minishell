@@ -22,16 +22,6 @@ int	ft_str_ui_len(const char *s, int start, int letra)
 	return (i - start);
 }
 
-char	*pipe_str(void)
-{
-	char	*str;
-
-	str = malloc(sizeof(char) * 2);
-	str[0] = '|';
-	str[1] = '\0';
-	return (str);
-}
-
 char	*str_space_dup(const char *s1, int start, int letra)
 {
 	char	*str;
@@ -52,7 +42,6 @@ char	*str_space_dup(const char *s1, int start, int letra)
 		i++;
 	}
 	str[j] = '\0';
-	slen(str);
 	return (str);
 }
 
@@ -63,7 +52,7 @@ int	pipe_counter(t_cmds *fds)
 	i = 0;
 	while (fds)
 	{
-		if (fds->cmd && fds->cmd[0] == '|')
+		if (fds->cmd && ft_strcmp(fds->cmd, "|314159265358979323846") == 0)
 			i++;
 		fds = fds->next;
 	}
