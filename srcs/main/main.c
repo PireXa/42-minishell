@@ -14,17 +14,7 @@
 
 int	g_ec = 0;
 
-void	free_double_array(char **array)
-{
-	int	i;
-
-	i = -1;
-	while (array[++i])
-		free(array[i]);
-	free(array);
-}
-
-void	build_export_table(t_minithings *mt, char **envp)
+void	build_export_table(t_mthings *mt, char **envp)
 {
 	int		i;
 	char	**el;
@@ -33,8 +23,8 @@ void	build_export_table(t_minithings *mt, char **envp)
 	i = 0;
 	el = ft_split(envp[i], '=');
 	getcwd(tmp, sizeof(tmp));
-	mt->efpath = ft_strjoin(tmp, "/e");
-	mt->export = malloc(sizeof(t_exporttable *));
+	mt->efpath = ft_strjoin(tmp, "/.e");
+	mt->export = malloc(sizeof(t_extab *));
 	(*mt->export) = NULL;
 	mt->wcode = open(mt->efpath, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	nodefront(mt->export, envvaradd("?", "0", mt));
@@ -48,9 +38,9 @@ void	build_export_table(t_minithings *mt, char **envp)
 	}
 }
 
-void	free_export_table(t_exporttable *export)
+void	free_export_table(t_extab *export)
 {
-	t_exporttable	*tmp;
+	t_extab	*tmp;
 
 	while (export)
 	{
@@ -63,17 +53,15 @@ void	free_export_table(t_exporttable *export)
 	free(export);
 }
 
-void	do_things(t_minithings *mt, char **envp)
+void	do_things(t_mthings *mt, char **envp)
 {
+	(void)envp;
 	if (g_ec != 0)
 		exitcode_gvar(mt);
-	mt->cmds = parser(mt->line, mt->export);
+	mt->cmds = parser(mt->line, mt->export, mt);
 	if (mt->cmds)
 	{
-		if (redirections(mt, envp))
-			;
-		else
-			commands(mt, envp);
+		commands(mt, envp);
 		free_triple_pointer(mt->cmds);
 		exitcode_file(mt);
 	}
@@ -81,20 +69,35 @@ void	do_things(t_minithings *mt, char **envp)
 	{
 		printf("minishell: parsing error\n");
 		change_errorcode(mt->export, "1\n");
-		free(mt->cmds);
 	}
 	free(mt->line);
+	delete_linked_list(*mt->ins);
+	free(mt->ins);
+	delete_linked_list(*mt->outs);
+	free(mt->outs);
+	unlink(".heredoc");
+}
+
+void	insandouts(t_mthings *mt)
+{
+	mt->ins = malloc(sizeof(t_cmds *));
+	(*mt->ins) = NULL;
+	ft_lstaddback(mt->ins, ft_lstnew(ft_strdup("exit"), 0, 0));
+	mt->outs = malloc(sizeof(t_cmds *));
+	(*mt->outs) = NULL;
+	ft_lstaddback(mt->outs, ft_lstnew(ft_strdup("echo"), 0, 0));
 }
 
 int	main(int ac, char **av, char **envp)
 {
-	t_minithings	*mt;
-	char			*colorful_path;
+	t_mthings	*mt;
+	char		*colorful_path;
 
-	mt = (t_minithings *) malloc(sizeof(t_minithings));
+	mt = (t_mthings *) malloc(sizeof(t_mthings));
 	build_export_table(mt, envp);
 	while (ac != slen(av[ac]))
 	{
+		insandouts(mt);
 		sig_handler();
 		colorful_path = get_prompt();
 		mt->line = readline(colorful_path);
@@ -108,8 +111,6 @@ int	main(int ac, char **av, char **envp)
 				do_things(mt, envp);
 		}
 		else
-		{
-			free(mt->line);
-		}
+			free_emptyline(mt);
 	}
 }

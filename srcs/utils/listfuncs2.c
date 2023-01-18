@@ -12,69 +12,68 @@
 
 #include"../../inc/minishell.h"
 
-int	slen(const char *s)
+void	delete_elem(t_cmds **lst, int index)
 {
-	int	i;
+	t_cmds	*tmp;
+	t_cmds	*prev;
+
+	if (index < 0)
+		return ;
+	tmp = *lst;
+	if (index == 0)
+	{
+		*lst = tmp->next;
+		free(tmp->cmd);
+		free(tmp);
+		return ;
+	}
+	while (index--)
+	{
+		prev = tmp;
+		tmp = tmp->next;
+	}
+	prev->next = tmp->next;
+	free(tmp->cmd);
+	free(tmp);
+}
+
+int	sizelst(t_cmds **lst)
+{
+	int		i;
+	t_cmds	*tmp;
 
 	i = 0;
-	if (!s)
-		return (0);
-	while (s[i] && s[i] != '\0')
+	tmp = *lst;
+	while (tmp)
+	{
+		tmp = tmp->next;
 		i++;
+	}
 	return (i);
 }
 
-char	*ft_strdup(const char *s1)
+void	addinindex(t_cmds **lst, t_cmds *new, int index)
 {
-	char	*str;
-	size_t	i;
+	t_cmds	*tmp;
+	t_cmds	*prev;
 
-	str = (char *)malloc(sizeof(*s1) * (slen(s1) + 1));
-	if (!str)
-		return (NULL);
-	i = 0;
-	if (!s1)
-		return (NULL);
-	while (s1[i])
+	tmp = *lst;
+	if (index == 0)
 	{
-		str[i] = s1[i];
-		i++;
+		new->next = tmp;
+		*lst = new;
+		return ;
 	}
-	str[i] = 0;
-	return (str);
-}
-
-char	*ft_substr(char const *s, int start, size_t len)
-{
-	char	*str;
-	size_t	i;
-
-	if (!s)
-		return (NULL);
-	if (start > slen(s))
-		return (ft_strdup(""));
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (!str)
-		return (NULL);
-	i = 0;
-	while (i < len && s[start])
+	while (index-- && tmp)
 	{
-		str[i] = s[start];
-		i++;
-		start++;
+		prev = tmp;
+		tmp = tmp->next;
 	}
-	str[i] = 0;
-	return (str);
-}
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	int	i;
-
-	i = 0;
-	if (!s1 || !s2)
-		return (-1);
-	while (s1[i] && s2[i] && s1[i] == s2[i])
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+	if (index > 0)
+	{
+		ft_lstaddback(lst, new);
+		return ;
+	}
+	prev->next = new;
+	new->next = tmp;
 }

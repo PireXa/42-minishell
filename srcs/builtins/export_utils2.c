@@ -12,7 +12,7 @@
 
 #include "../../inc/minishell.h"
 
-int	check_duplicated(t_exporttable **export, char *str)
+int	check_duplicated(t_extab **export, char *str)
 {
 	int	i;
 
@@ -26,16 +26,18 @@ int	check_duplicated(t_exporttable **export, char *str)
 	return (0);
 }
 
-void	valmod(t_exporttable **export, char *value, int i, t_minithings *mt)
+void	valmod(t_extab **export, char *value, int i, t_mthings *mt)
 {
+	if (ind(*export, i)->value)
+		free(ind(*export, i)->value);
 	ind(*export, i)->value = ft_strdup(value);
 	write(mt->wcode, "0\n", 2);
 }
 
-t_exporttable	*copy_list(t_exporttable *export, t_minithings *minithings)
+t_extab	*copy_list(t_extab *export, t_mthings *minithings)
 {
-	t_exporttable	*new;
-	t_exporttable	*tmp;
+	t_extab	*new;
+	t_extab	*tmp;
 
 	new = NULL;
 	while (export)
@@ -47,8 +49,9 @@ t_exporttable	*copy_list(t_exporttable *export, t_minithings *minithings)
 	return (new);
 }
 
-void	showenv(t_exporttable *tmp2)
+void	showenv(t_extab *tmp2)
 {
+	tmp2 = tmp2->next;
 	while (tmp2)
 	{
 		if (slen(tmp2->value) > 0)
@@ -57,10 +60,10 @@ void	showenv(t_exporttable *tmp2)
 	}
 }
 
-void	show_export_list(t_minithings *minithings, int flag)
+void	show_export_list(t_mthings *minithings, int flag)
 {
-	t_exporttable	*tmp;
-	t_exporttable	*tmp2;
+	t_extab	*tmp;
+	t_extab	*tmp2;
 
 	tmp = copy_list(*minithings->export, minithings);
 	tmp2 = tmp;

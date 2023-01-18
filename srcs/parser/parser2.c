@@ -12,40 +12,62 @@
 
 #include "../../inc/minishell.h"
 
-t_parser	*aspas(t_parser *ctr, char *input,
-		t_cmds **cmds, t_exporttable **export)
+void	dollar_else(t_parser *ctr, char *i,
+	t_cmds	**cmds, t_extab	**export)
 {
-	ctr->start = ctr->i + 1;
-	while (input[++ctr->i] != '"')
-		;
-	if (ft_strchr(input + ctr->start, '$'))
-		adollar(ctr, input, cmds, export);
+	char	*str4;
+	char	*str6;
+	char	*str7;
+
+	str4 = only_z(i, ctr->start, export);
+	str6 = ft_strdup(get_last_content_in_cmds(cmds));
+	if (!str6)
+		str7 = ft_strdup(str4);
 	else
-		aspas_no_dollar(ctr, input, cmds);
-	return (ctr);
+		str7 = ft_strjoin(str6, str4);
+	delete_elem(cmds, sizelst(cmds) - 1);
+	if (i[ctr->start + 1] == ' ')
+		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str7, " "), 0, 0));
+	else
+		ft_lstaddback(cmds, ft_lstnew(ft_strdup(str7), 0, 0));
+	free(str4);
+	free(str6);
+	free(str7);
 }
 
-t_parser	*dollar(t_parser *ctr, char *i,
-		t_cmds **cmds, t_exporttable **export)
+void	dollar_if(t_parser *ctr, char *i,
+	t_cmds	**cmds, t_extab	**export)
 {
 	char	*str5;
 	char	*str4;
 
+	str5 = only_z(i, ctr->start, export);
+	str4 = ft_strdup(str5);
+	if (i[ctr->start - 1] == ' ')
+		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str4, " "), 0, 0));
+	else
+		command_dollar(cmds, str4);
+	free(str4);
+	free(str5);
+}
+
+t_parser	*dollar(t_parser *ctr, char *i,
+	t_cmds	**cmds, t_extab	**export)
+{
 	ctr->start = ctr->i;
 	while (i[++ctr->i] && i[ctr->i] != ' '
 		&& i[ctr->i] != '$' && i[ctr->i] != '"' && i[ctr->i] != '|')
 		;
 	if (i[ctr->i] == ' ' && i[ctr->i + 1] != '|'
 		&& i[ctr->i + 1] && i[ctr->i + 1] != ' ')
-	{
-		str5 = only_z(i, ctr->start, export);
-		str4 = ft_strdup(str5);
-		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str4, " ")));
-		free(str4);
-		free(str5);
-	}
+		dollar_if(ctr, i, cmds, export);
 	else
-		ft_lstaddback(cmds, ft_lstnew(only_z(i, ctr->start, export)));
+	{
+		if (i[ctr->start - 1] == ' ')
+			ft_lstaddback(cmds, ft_lstnew(only_z(i, ctr->start, export), 0, 0));
+		else
+			dollar_else(ctr, i, cmds, export);
+	}
 	ctr->i--;
 	return (ctr);
 }
@@ -53,7 +75,7 @@ t_parser	*dollar(t_parser *ctr, char *i,
 t_parser	*every(t_parser *ctr, char *i, t_cmds **cmds)
 {
 	ctr->start = ctr->i;
-	ft_lstaddback(cmds, ft_lstnew(str_super_dup(i, ctr->start, '0')));
+	ft_lstaddback(cmds, ft_lstnew(str_super_dup(i, ctr->start, '0'), 0, 0));
 	while (i[ctr->i] && i[ctr->i] != ' ' && i[ctr->i] != '$'
 		&& i[ctr->i] != '"' && i[ctr->i] != '|' && i[ctr->i] != '\'')
 		ctr->i++;
@@ -77,32 +99,4 @@ char	***return_parser(t_parser *ctr, t_cmds **cmds)
 	cleanup(cmd);
 	free(ctr);
 	return (cmd);
-}
-
-char	***ez_parsing(t_parser *ctr, char *input, t_exporttable **export)
-{
-	t_cmds		**cmds;
-
-	if (pipepipe(input))
-		return (NULL);
-	cmds = (t_cmds **)malloc(sizeof(t_cmds *) * 1);
-	*cmds = NULL;
-	ctr->i = -1;
-	while (++ctr->i < slen(input))
-	{
-		if (input[ctr->i] == '\'')
-			ctr = barra(ctr, input, cmds);
-		else if (input[ctr->i] == '"')
-			ctr = aspas(ctr, input, cmds, export);
-		else if (input[ctr->i] == '$')
-			ctr = dollar(ctr, input, cmds, export);
-		else if (input[ctr->i] == '|')
-			ft_lstaddback(cmds, ft_lstnew(ft_strdup("|314159265358979323846")));
-		else if (input[ctr->i] != ' ')
-			ctr = every(ctr, input, cmds);
-	}
-	if (ft_strcmp(ft_last_cmd(*cmds)->cmd, "|314159265358979323846") == 0
-		&& input[slen(input) - 1] == '|')
-		return (missing_command_after_pipe(ctr, cmds));
-	return (return_parser(ctr, cmds));
 }

@@ -12,7 +12,7 @@
 
 #include"../../inc/minishell.h"
 
-static void	echo_option(t_minithings *minithings, int indx, int i)
+static void	echo_option(t_mthings *minithings, int indx, int i)
 {
 	if (minithings->cmds[indx][1][1] == 'n')
 	{
@@ -29,7 +29,7 @@ static void	echo_option(t_minithings *minithings, int indx, int i)
 	}
 }
 
-void	echo(t_minithings *mt, int indx)
+void	echo(t_mthings *mt, int indx)
 {
 	int	i;
 

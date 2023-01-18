@@ -12,56 +12,49 @@
 
 #include "../../inc/minishell.h"
 
-extern char	*g_ec;
-
-void	*ft_memset(void *b, int c, size_t len)
+t_parser	*aspas(t_parser *ctr, char *input,
+				t_cmds **cmds, t_extab **export)
 {
-	unsigned char	*ptr;
-
-	ptr = b;
-	while (len-- > 0)
-		*ptr++ = c;
-	return (b);
+	ctr->start = ctr->i + 1;
+	while (input[++ctr->i] != '"')
+		;
+	if (ft_strchr(input + ctr->start, '$'))
+		adollar(ctr, input, cmds, export);
+	else
+		aspas_no_dollar(ctr, input, cmds);
+	return (ctr);
 }
 
-void	ft_bzero(void *s, size_t n)
+char	*get_last_content_in_cmds(t_cmds **cmds)
 {
-	ft_memset(s, 0, n);
+	t_cmds	*tmp;
+
+	if (!cmds || !*cmds)
+		return (NULL);
+	tmp = *cmds;
+	while (tmp->next)
+		tmp = tmp->next;
+	return (tmp->cmd);
 }
 
-void	*ft_calloc(size_t count, size_t size)
+void	command_dollar(t_cmds **cmds, char *str4)
 {
-	void	*ptr;
+	char	*str6;
+	char	*str7;
 
-	ptr = (void *)malloc(count * size);
-	if (!ptr)
-		exit(0);
-	ft_bzero(ptr, count * size);
-	return (ptr);
+	str6 = ft_strdup(ft_last_cmd(*cmds)->cmd);
+	str7 = ft_strjoin(str6, str4);
+	delete_elem(cmds, sizelst(cmds) - 1);
+	ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str7, " "), 0, 0));
+	free(str6);
+	free(str7);
 }
 
-void	megafree(t_mthings *mt)
+void	*missing_command_after_redir(t_parser *ctr, t_cmds **cmds)
 {
-	free_export_table(*mt->export);
-	delete_linked_list(*mt->ins);
-	free(mt->ins);
-	delete_linked_list(*mt->outs);
-	free(mt->outs);
-	free(mt->export);
-	free(mt->line);
-	free(mt->efpath);
-	free(mt);
-	write(1, "exit\n", 5);
-	unlink(".e");
-	exit(0);
-}
-
-void	free_double_array(char **array)
-{
-	int	i;
-
-	i = -1;
-	while (array[++i])
-		free(array[i]);
-	free(array);
+	printf("minishell: syntax error near unexpected token `newline'\n");
+	delete_linked_list(*cmds);
+	free(cmds);
+	free(ctr);
+	return (NULL);
 }

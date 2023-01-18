@@ -60,7 +60,7 @@ char	**cmd_maker(t_cmds *fds, int nbr)
 
 	i = -1;
 	argn = arg_ctr(fds, nbr);
-	cmd = malloc(sizeof(char *) * (argn + 1));
+	cmd = malloc(sizeof(char *) * (argn + 2));
 	while (nbr > 1 && fds->next)
 	{
 		if ((fds->cmd[0] == '|' && fds->cmd[1] != ' ') || fds->next == NULL)

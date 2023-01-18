@@ -12,14 +12,17 @@
 
 #include"../../inc/minishell.h"
 
-t_cmds	*ft_lstnew(void *content)
+t_cmds	*ft_lstnew(void *content, int quotes, int redirect)
 {
 	t_cmds	*new;
 
-	new = malloc(sizeof(t_list));
+	new = malloc(sizeof(t_cmds));
 	if (!new)
 		return (NULL);
-	new->cmd = content;
+	new->cmd = ft_strdup(content);
+	free(content);
+	new->quotes = quotes;
+	new->redirect = redirect;
 	new->next = NULL;
 	return (new);
 }
@@ -39,7 +42,7 @@ void	ft_lstaddback(t_cmds **lst, t_cmds *new)
 	tmp->next = new;
 }
 
-int	ft_lstsize(t_exporttable *lst)
+int	ft_lstsize(t_extab *lst)
 {
 	int	i;
 
@@ -50,4 +53,19 @@ int	ft_lstsize(t_exporttable *lst)
 		i++;
 	}
 	return (i);
+}
+
+t_cmds	*idx(t_cmds **cmds, int index)
+{
+	int		i;
+	t_cmds	*lst;
+
+	i = 0;
+	lst = *cmds;
+	while (lst && lst->next && i < index)
+	{
+		lst = lst->next;
+		i++;
+	}
+	return (lst);
 }

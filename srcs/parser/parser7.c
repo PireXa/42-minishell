@@ -12,56 +12,61 @@
 
 #include"../../inc/minishell.h"
 
-t_parser	*barra(t_parser *ctr, char *input, t_cmds **cmds)
+t_parser	*barra(t_parser *p, char *in, t_cmds **cmd)
 {
 	char	*str;
 
-	ctr->start = ctr->i + 1;
-	while (input[++ctr->i] != '\'')
+	p->start = p->i + 1;
+	while (in[++p->i] != '\'')
 		;
-	if (input[ctr->i + 1] == ' ')
+	if (in[p->i + 1] == ' ')
 	{
-		str = str_space_dup(input, ctr->start, '\'');
-		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str, " ")));
+		str = str_space_dup(in, p->start, '\'');
+		ft_lstaddback(cmd, ft_lstnew(ft_strjoin(str, " "), 2, 0));
 		free(str);
 	}
 	else
-		ft_lstaddback(cmds, ft_lstnew(str_space_dup(input, ctr->start, '\'')));
-	return (ctr);
+		ft_lstaddback(cmd, ft_lstnew(str_space_dup(in, p->start, '\''), 2, 0));
+	return (p);
 }
 
 void	adollar(t_parser *ctr, char *input,
-					t_cmds **cmds, t_exporttable **export)
+				t_cmds **cmds, t_extab **export)
 {
 	char	*str2;
 
 	if (input[ctr->i + 1] == ' ')
 	{
 		str2 = dollar_expansion(input, ctr->start, '"', export);
-		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str2, " ")));
+		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str2, " "), 2, 0));
 		free(str2);
 	}
 	else
 		ft_lstaddback(cmds, ft_lstnew(
-				dollar_expansion(input, ctr->start, '"', export)));
+				dollar_expansion(input, ctr->start, '"', export), 2, 0));
 }
 
-void	aspas_no_dollar(t_parser *ctr, char *input, t_cmds **cmds)
+void	aspas_no_dollar(t_parser *p, char *in, t_cmds **cmd)
 {
 	char	*str;
 
-	if (input[ctr->i + 1] == ' ')
+	if (in[p->i + 1] == ' ')
 	{
-		str = str_space_dup(input, ctr->start, '"');
-		ft_lstaddback(cmds, ft_lstnew(ft_strjoin(str, " ")));
+		str = str_space_dup(in, p->start, '"');
+		ft_lstaddback(cmd, ft_lstnew(ft_strjoin(str, " "), 2, 0));
 		free(str);
 	}
 	else
-		ft_lstaddback(cmds, ft_lstnew(str_space_dup(input, ctr->start, '"')));
+		ft_lstaddback(cmd, ft_lstnew(str_space_dup(in, p->start, '"'), 2, 0));
 }
 
 t_cmds	*ft_last_cmd(t_cmds *cmds)
 {
+	if (!cmds)
+	{
+		cmds = ft_lstnew("", 0, 0);
+		return (cmds);
+	}
 	while (cmds->next)
 		cmds = cmds->next;
 	return (cmds);

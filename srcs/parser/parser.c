@@ -12,7 +12,7 @@
 
 #include"../../inc/minishell.h"
 
-char	*only_z(char *input, int start, t_exporttable **export)
+char	*only_z(char *input, int start, t_extab **export)
 {
 	char	*var_value;
 	char	*key;
@@ -60,13 +60,13 @@ int	dpsize(char **input)
 	return (i);
 }
 
-void	quotes(t_exporttable **export)
+void	quotes(t_extab **export)
 {
 	printf("Error: uneven quotes\n");
 	change_errorcode(export, "127");
 }
 
-char	***parser(char *input, t_exporttable **export)
+char	***parser(char *input, t_extab **export, t_mthings *mt)
 {
 	t_parser	*ctr;
 
@@ -80,5 +80,5 @@ char	***parser(char *input, t_exporttable **export)
 		return (NULL);
 	}
 	ctr = (t_parser *)malloc(sizeof(t_parser));
-	return (ez_parsing(ctr, input, export));
+	return (ezpars(ctr, input, export, mt));
 }

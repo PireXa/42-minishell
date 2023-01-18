@@ -41,18 +41,23 @@ int	ft_atoi(const char *str)
 	return (res);
 }
 
-void	freebonitodoexit(t_minithings *mt, char ****quad)
+void	freebonitodoexit(t_mthings *mt, char ****quad)
 {
 	free_export_table(*mt->export);
 	free(mt->export);
 	free(mt->line);
 	free(mt->efpath);
 	free_triple_pointer(mt->cmds);
+	delete_linked_list(*mt->ins);
+	free(mt->ins);
+	delete_linked_list(*mt->outs);
+	free(mt->outs);
 	free(mt);
 	freequadpointer(quad);
+	unlink(".e");
 }
 
-void	exitin(char ****quad, t_minithings *mt, int i)
+void	exitin(char ****quad, t_mthings *mt, int i)
 {
 	int	exitcode;
 

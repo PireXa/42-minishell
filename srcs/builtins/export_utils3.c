@@ -12,7 +12,7 @@
 
 #include "../../inc/minishell.h"
 
-void	nodefront(t_exporttable **head, t_exporttable *new)
+void	nodefront(t_extab **head, t_extab *new)
 {
 	if (!head || !new)
 		return ;
@@ -20,9 +20,9 @@ void	nodefront(t_exporttable **head, t_exporttable *new)
 	*head = new;
 }
 
-void	nodeback(t_exporttable **lst, t_exporttable *new)
+void	nodeback(t_extab **lst, t_extab *new)
 {
-	t_exporttable	*tmp;
+	t_extab	*tmp;
 
 	if (!*lst)
 	{

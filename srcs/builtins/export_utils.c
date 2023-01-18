@@ -12,9 +12,9 @@
 
 #include"../../inc/minishell.h"
 
-void	delete_export(t_exporttable *lst)
+void	delete_export(t_extab *lst)
 {
-	t_exporttable	*tmp;
+	t_extab	*tmp;
 
 	while (lst)
 	{
@@ -26,7 +26,7 @@ void	delete_export(t_exporttable *lst)
 	}
 }
 
-void	sortlistutils2(t_exporttable *l, int *i_j, char *tkey, char *tvalue)
+void	sortlistutils2(t_extab *l, int *i_j, char *tkey, char *tvalue)
 {
 	char	*tmpkey2;
 	char	*tmpvalue2;
@@ -39,7 +39,7 @@ void	sortlistutils2(t_exporttable *l, int *i_j, char *tkey, char *tvalue)
 	ind(l, i_j[1])->value = tvalue;
 }
 
-void	sortlistutils(t_exporttable *l, int *i)
+void	sortlistutils(t_extab *l, int *i)
 {
 	char	*tmpkey;
 	char	*tmpvalue;
@@ -52,7 +52,7 @@ void	sortlistutils(t_exporttable *l, int *i)
 	}
 }
 
-void	ft_sort_list(t_exporttable *l, int size)
+void	ft_sort_list(t_extab *l, int size)
 {
 	int		*i_j;
 
@@ -69,10 +69,10 @@ void	ft_sort_list(t_exporttable *l, int size)
 	}
 }
 
-t_exporttable	*ind(t_exporttable *list, int index)
+t_extab	*ind(t_extab *list, int index)
 {
 	int				i;
-	t_exporttable	*tmp;
+	t_extab			*tmp;
 
 	i = 0;
 	tmp = list;

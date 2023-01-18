@@ -12,7 +12,7 @@
 
 #include"../../inc/minishell.h"
 
-void	til(t_minithings *mt, int indx)
+void	til(t_mthings *mt, int indx)
 {
 	chdir(getenv("HOME"));
 	if (chdir(mt->cmds[indx][1] + 2) != 0)
@@ -24,9 +24,9 @@ void	til(t_minithings *mt, int indx)
 		write(mt->wcode, "0\n", 2);
 }
 
-void	cd(t_minithings *mt, int indx)
+void	cd(t_mthings *mt, int indx)
 {
-	if (mt->cmds[indx][2])
+	if (mt->cmds[indx] && mt->cmds[indx][1] && mt->cmds[indx][2])
 	{
 		printf("amazingshell: cd: too many arguments\n");
 		write(mt->wcode, "1\n", 2);
@@ -52,7 +52,7 @@ void	cd(t_minithings *mt, int indx)
 		write(mt->wcode, "0\n", 2);
 }
 
-void	pwd(t_minithings *mt)
+void	pwd(t_mthings *mt)
 {
 	char	cwd[1024];
 

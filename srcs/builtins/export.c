@@ -12,9 +12,9 @@
 
 #include"../../inc/minishell.h"
 
-t_exporttable	*envvaradd(char *k, char *v, t_minithings *mt)
+t_extab	*envvaradd(char *k, char *v, t_mthings *mt)
 {
-	t_exporttable	*new;
+	t_extab	*new;
 
 	if (ft_strcmp(k, "") == 0 || (k[0] >= '0' && k[0] <= '9'))
 	{
@@ -22,7 +22,7 @@ t_exporttable	*envvaradd(char *k, char *v, t_minithings *mt)
 		printf("minishell: export: `%s=%s': not a valid identifier\n", k, v);
 		return (NULL);
 	}
-	new = malloc(sizeof(t_exporttable));
+	new = malloc(sizeof(t_extab));
 	if (!new)
 		return (NULL);
 	if (!v)
@@ -59,9 +59,9 @@ char	**key_and_value(char **cmd, char *line, int *p)
 	return (key_value);
 }
 
-void	change_errorcode(t_exporttable **export, char *code)
+void	change_errorcode(t_extab **export, char *code)
 {
-	t_exporttable	*tmp;
+	t_extab	*tmp;
 
 	tmp = *export;
 	while (tmp->k[0] != '?')
@@ -73,7 +73,7 @@ void	change_errorcode(t_exporttable **export, char *code)
 	tmp->value[slen(tmp->value) - 1] = '\0';
 }
 
-void	mod_or_add(t_minithings *mt, int ind, char **var)
+void	mod_or_add(t_mthings *mt, int ind, char **var)
 {
 	if (ind)
 	{
@@ -87,7 +87,7 @@ void	mod_or_add(t_minithings *mt, int ind, char **var)
 	free_double_array(var);
 }
 
-void	export(t_minithings *mt)
+void	export(t_mthings *mt)
 {
 	int		*i;
 	char	**var;

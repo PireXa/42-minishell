@@ -65,7 +65,7 @@ char	*ft_itoa(int n)
 	return (ft_strrev(str));
 }
 
-void	exitcode_gvar(t_minithings *mt)
+void	exitcode_gvar(t_mthings *mt)
 {
 	char	*tmp;
 	char	*tmp2;
@@ -78,7 +78,7 @@ void	exitcode_gvar(t_minithings *mt)
 	g_ec = 0;
 }
 
-void	exitcode_file(t_minithings *mt)
+void	exitcode_file(t_mthings *mt)
 {
 	char	*exitvalue;
 
@@ -93,4 +93,13 @@ void	exitcode_file(t_minithings *mt)
 	}
 	free(exitvalue);
 	close(mt->rcode);
+}
+
+void	free_emptyline(t_mthings *mt)
+{
+	free(mt->line);
+	delete_linked_list(*mt->ins);
+	free(mt->ins);
+	delete_linked_list(*mt->outs);
+	free(mt->outs);
 }

@@ -64,7 +64,7 @@ int	get_var_name(char *n, int start, t_cmds **lst)
 			i++;
 			ctr++;
 		}
-		ft_lstaddback(lst, ft_lstnew(ft_strndup(n + i - ctr, ctr)));
+		ft_lstaddback(lst, ft_lstnew(ft_strndup(n + i - ctr, ctr), 0, 0));
 		if (ctr != 0)
 			var_len += ctr + 1;
 		ctr = 0;
@@ -73,29 +73,29 @@ int	get_var_name(char *n, int start, t_cmds **lst)
 	return (var_len);
 }
 
-void	get_val_from_export(t_exporttable **export,
+void	get_val_from_export(t_extab **export,
 							t_cmds **vars, t_cmds **values)
 {
 	t_cmds			*tmp;
-	t_exporttable	*tmp2;
+	t_extab			*tmp2;
 
 	tmp = *vars;
 	tmp2 = *export;
 	while (tmp)
 	{
 		if (ft_strcmp(tmp->cmd, "") == 0)
-			ft_lstaddback(values, ft_lstnew(ft_strdup("$")));
+			ft_lstaddback(values, ft_lstnew(ft_strdup("$"), 0, 0));
 		while (tmp2)
 		{
 			if (ft_strcmp(tmp->cmd, tmp2->k) == 0)
 			{
-				ft_lstaddback(values, ft_lstnew(ft_strdup(tmp2->value)));
+				ft_lstaddback(values, ft_lstnew(ft_strdup(tmp2->value), 0, 0));
 				break ;
 			}
 			tmp2 = tmp2->next;
 		}
 		if (tmp2 == NULL)
-			ft_lstaddback(values, ft_lstnew(ft_strdup("")));
+			ft_lstaddback(values, ft_lstnew(ft_strdup(""), 0, 0));
 		tmp2 = *export;
 		tmp = tmp->next;
 	}

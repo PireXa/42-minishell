@@ -12,7 +12,7 @@
 
 #include"../../inc/minishell.h"
 
-void	swap(t_exporttable *st)
+void	swap(t_extab *st)
 {
 	char	*holdkey;
 	char	*holdvalue;
@@ -27,10 +27,10 @@ void	swap(t_exporttable *st)
 	ind(st, 1)->value = holdvalue;
 }
 
-void	delete_node(t_exporttable **export, int index)
+void	delete_node(t_extab **export, int index)
 {
-	t_exporttable	*tmp;
-	t_exporttable	*prev;
+	t_extab	*tmp;
+	t_extab	*prev;
 
 	tmp = *export;
 	if (index == 0)
@@ -52,7 +52,7 @@ void	delete_node(t_exporttable **export, int index)
 	free(tmp);
 }
 
-void	change_unset_exitcode(t_minithings *minithings, int error)
+void	change_unset_exitcode(t_mthings *minithings, int error)
 {
 	if (error)
 		change_errorcode(minithings->export, "1");
@@ -60,7 +60,7 @@ void	change_unset_exitcode(t_minithings *minithings, int error)
 		change_errorcode(minithings->export, "0");
 }
 
-void	unset(t_minithings *minithings)
+void	unset(t_mthings *minithings)
 {
 	int		i;
 	int		j;

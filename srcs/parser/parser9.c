@@ -12,56 +12,7 @@
 
 #include "../../inc/minishell.h"
 
-extern char	*g_ec;
-
-void	*ft_memset(void *b, int c, size_t len)
-{
-	unsigned char	*ptr;
-
-	ptr = b;
-	while (len-- > 0)
-		*ptr++ = c;
-	return (b);
-}
-
-void	ft_bzero(void *s, size_t n)
-{
-	ft_memset(s, 0, n);
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	void	*ptr;
-
-	ptr = (void *)malloc(count * size);
-	if (!ptr)
-		exit(0);
-	ft_bzero(ptr, count * size);
-	return (ptr);
-}
-
-void	megafree(t_mthings *mt)
-{
-	free_export_table(*mt->export);
-	delete_linked_list(*mt->ins);
-	free(mt->ins);
-	delete_linked_list(*mt->outs);
-	free(mt->outs);
-	free(mt->export);
-	free(mt->line);
-	free(mt->efpath);
-	free(mt);
-	write(1, "exit\n", 5);
-	unlink(".e");
-	exit(0);
-}
-
-void	free_double_array(char **array)
-{
-	int	i;
-
-	i = -1;
-	while (array[++i])
-		free(array[i]);
-	free(array);
-}
+//t_cmds*** split_list(t_cmds* list, char* delimiter)
+//{
+//
+//}
